@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Setup the local development environment for working in this project.
+
+set -e
+
+check_for_uv() {
+  if ! command -v uv >/dev/null; then
+    printf "\033[0;35mInstalling uv\033[0m\n"
+    brew update && brew install uv
+  fi
+}
+
+check_python_version() {
+  # shellcheck disable=SC2155
+  local PYTHON_VERSION=$(head -n 1 ".python-version")
+  uv python find "${PYTHON_VERSION}" >/dev/null 2>&1 || uv python install --default
+}
+
+# Add a pre-push git hook to the repository's git configuration (./.git/config) for local CI.
+# Requires Git version >2.54.0.
+add_pre_push_git_hook() {
+  # shellcheck disable=SC2155
+  local git_version=$(git --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+
+  if ! [[ "$(printf '%s\n' "2.54.0" "$git_version" | sort -V | tail -n 1)" == "$git_version" ]]; then
+    printf "\033[0;31mError:\033[0m Git version must be at least 2.54.0, found %s\n" "$git_version"
+    exit 1
+  fi
+
+  git config set --local hook.ci.event pre-push
+  git config set --local hook.ci.command ./bin/ci
+}
+
+check_for_uv
+check_python_version
+add_pre_push_git_hook
+
+printf "\033[0;32m==> Setup complete\033[0m\n"

@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Environment
+.env
+
+# Ruff
+.ruff_cache/
+
+# MacOS
+.DS_Store
+
+# IDE
+.vscode/*
+!/.vscode/settings.json

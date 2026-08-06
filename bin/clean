@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# Remove temporary artifacts and extraneous files from the project.
+
+remove_artifacts() {
+  local ARTIFACTS=(
+    ./.ruff_cache
+  )
+
+  for ARTIFACT in "${ARTIFACTS[@]}"; do
+    if [[ -d "${ARTIFACT}" ]]; then
+      rm -rf "${ARTIFACT}"
+      printf "Removed artifact: \033[35;1m%s\033[0m\n" "${ARTIFACT}"
+    fi
+  done
+}
+
+remove_pycache_dirs() {
+  local dirs=(./excerpts ./tests)
+  local dir_count=0
+
+  for dir in "${dirs[@]}"; do
+    if [[ -n "$(find "$dir" -type d -name __pycache__ -print -quit 2>/dev/null)" ]]; then
+      find "$dir" -type d -name __pycache__ -exec rm -rf {} +
+      ((dir_count++))
+    fi
+  done
+
+  if [[ $dir_count -gt 0 ]]; then
+    printf "Removed all \033[35;1m__pycache__\033[0m directories\n"
+  fi
+}
+
+remove_artifacts
+remove_pycache_dirs
