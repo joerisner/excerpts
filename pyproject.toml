@@ -25,3 +25,65 @@ dev = [
     "ruff>=0.16.1",
     "ty>=0.0.69",
 ]
+
+
+#################
+##### Tools #####
+#################
+
+[tool.coverage.html]
+directory = "tests/coverage/html"
+
+[tool.coverage.run]
+branch = true
+data_file = "tests/coverage/.coverage"
+source = ["excerpts/*"]
+
+[tool.coverage.xml]
+output = "tests/coverage/coverage.xml"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--junitxml=tests/test_results/junit.xml",
+    "--strict-config",
+    "-vv"
+]
+cache_dir = "tests/.pytest_cache"
+junit_suite_name = "excerpts"
+pythonpath = ["excerpts"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint]
+select = [
+    "F",     # pyflakes
+    "E",     # pycodestyle
+    "SIM",   # flake8-simplify
+    "ARG",   # flake8-unused-arguments
+    "PT",    # flake8-pytest-style
+    "ANN",   # flake8-annotations
+    "S",     # flake8-bandit
+    "UP",    # pyupgrade
+    "I",     # isort
+    "FAST",  # fastapi
+    "N"      # pep8-naming
+]
+ignore = ["ANN401"]  # allow use of `Any` type
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "ANN",  # ignore `annotation` rules for test files
+    "S101"  # allow `assert` in tests
+]
+
+[tool.fastapi]
+entrypoint = "excerpts.main:app"
