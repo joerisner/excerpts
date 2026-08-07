@@ -1,5 +1,5 @@
 .DEFAULT_GOAL=help
-.PHONY: help clean setup ci tf-plan tf-apply
+.PHONY: help clean setup dev ci tf-plan tf-apply tf-fmt
 
 ci: ## Run CI locally
 	@bin/ci
@@ -9,6 +9,9 @@ clean: ## Remove temporary artifacts
 
 setup: ## Install uv, required Python version, and Git pre-push hook to run CI locally
 	@bin/setup
+
+dev: setup ## Run the application in dev mode
+	@uv run fastapi dev --port 3000
 
 # Terraform
 tf-plan: ## Run terraform plan
