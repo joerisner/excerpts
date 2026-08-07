@@ -16,3 +16,51 @@ jobs:
         run: uv sync --locked
       - name: lint
         run: uv run ruff check .
+
+  ruff-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v9.0.0
+      - name: install project
+        run: uv sync --locked
+      - name: format
+        run: uv run ruff format --check .
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v9.0.0
+      - name: install project
+        run: uv sync --locked
+      - name: typecheck
+        run: uv run ty check .
+
+  tf-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+      - name: check terraform format
+        run: terraform -chdir=infra fmt -check
+
+  tf-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+      - name: initialize terraform
+        run: terraform -chdir=infra init
+      - name: validate terraform configuration
+        run: terraform -chdir=infra validate
+
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v9.0.0
+      - name: install project
+        run: uv sync --locked
+      - name: pytest
+        run: uv run pytest

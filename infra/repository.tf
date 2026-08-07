@@ -58,7 +58,7 @@ resource "github_actions_repository_permissions" "this" {
   allowed_actions_config {
     github_owned_allowed = true # actions/checkout, actions/setup-*, etc.
     verified_allowed     = false
-    patterns_allowed     = ["astral-sh/setup-uv@*"]
+    patterns_allowed     = ["astral-sh/setup-uv@*", "hashicorp/setup-terraform@*"]
   }
 }
 
