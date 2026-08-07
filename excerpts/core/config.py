@@ -11,4 +11,4 @@ class Config(BaseSettings):
     API_DOCS_URL: str | None = "/api/docs"
 
 
-config = Config()  # type: ignore - Values come from ENV.
+config = Config()

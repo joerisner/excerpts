@@ -3,6 +3,49 @@
 # Local CI checks.
 # This is executed as a pre-push git hook, but can be ran ad-hoc as well: `bin/ci`.
 
-uv run ruff check .
-terraform -chdir=infra fmt -check
-terraform -chdir=infra validate
+GREEN='\033[32;1m'
+RED='\033[31;1m'
+BLUE='\033[34;1m'
+DIM_WHITE='\033[37;2m'
+RESET='\033[0m'
+
+FAILURES=0
+
+run_check() {
+  local desc=$1
+  local cmd=$2
+
+  eval "$cmd" &>/dev/null
+
+  # shellcheck disable=SC2181
+  if [[ $? -eq 0 ]]; then
+    printf "${GREEN}✔${RESET} %s\n" "$desc"
+  else
+    printf "${RED}𝙭${RESET} %s\n" "$desc"
+    printf "  ${DIM_WHITE}↳ hint: run \'%s\' to troubleshoot${RESET}\n" "$cmd"
+    FAILURES=$((FAILURES + 1))
+  fi
+}
+
+printf "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞\n"
+# shellcheck disable=SC2059
+printf "∞∞∞∞∞∞∞∞ ${BLUE}CI${RESET} ∞∞∞∞∞∞∞∞\n"
+printf "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞\n\n"
+
+run_check "ruff-lint" "uv run ruff check ."
+run_check "ruff-format" "uv run ruff format --check ."
+run_check "tf-format" "terraform -chdir=infra fmt -check"
+run_check "tf-validate" "terraform -chdir=infra validate"
+run_check "typecheck" "uv run ty check ."
+run_check "test" "uv run pytest"
+
+if [[ $FAILURES -gt 0 ]]; then
+    # shellcheck disable=SC2059
+    printf "\n🚫 CI ${RED}failed${RESET}\n"
+    printf "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞\n\n"
+    exit 1
+fi
+
+# shellcheck disable=SC2059
+printf "\n🚀 CI ${GREEN}passed${RESET}\n"
+printf "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞\n\n"
