@@ -38,3 +38,6 @@ tfplan
 tests/test_results/
 tests/coverage/
 tests/.pytest_cache/
+
+# Local docs
+docs/
