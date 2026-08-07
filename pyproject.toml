@@ -7,9 +7,21 @@ authors = [
     { name = "joerisner" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "alembic>=1.19.0",
+    "fastapi[standard-no-fastapi-cloud-cli]>=0.141.1",
+    "httpx2>=2.9.1",
+    "psycopg[binary]>=3.3.4",
+    "pwdlib[argon2]>=0.3.0",
+    "pyjwt>=2.13.0",
+    "sqlalchemy>=2.0.51",
+]
 
 [dependency-groups]
 dev = [
+    "dirty-equals>=0.11",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
     "ruff>=0.16.1",
+    "ty>=0.0.69",
 ]
