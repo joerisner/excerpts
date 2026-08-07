@@ -21,3 +21,15 @@ wheels/
 # IDE
 .vscode/*
 !/.vscode/settings.json
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+tfplan
+
+# Logs
+*.log

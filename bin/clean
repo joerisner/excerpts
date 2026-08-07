@@ -5,10 +5,11 @@
 remove_artifacts() {
   local ARTIFACTS=(
     ./.ruff_cache
+    ./terraform.log
   )
 
   for ARTIFACT in "${ARTIFACTS[@]}"; do
-    if [[ -d "${ARTIFACT}" ]]; then
+    if [[ -e "${ARTIFACT}" ]]; then
       rm -rf "${ARTIFACT}"
       printf "Removed artifact: \033[35;1m%s\033[0m\n" "${ARTIFACT}"
     fi

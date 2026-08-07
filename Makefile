@@ -1,5 +1,5 @@
 .DEFAULT_GOAL=help
-.PHONY: help clean setup ci
+.PHONY: help clean setup ci tf-plan tf-apply
 
 ci: ## Run CI locally
 	@bin/ci
@@ -9,6 +9,17 @@ clean: ## Remove temporary artifacts
 
 setup: ## Install uv, required Python version, and Git pre-push hook to run CI locally
 	@bin/setup
+
+# Terraform
+tf-plan: ## Run terraform plan
+	@terraform -chdir=infra init
+	@terraform -chdir=infra plan
+
+tf-apply: ## Run terraform apply
+	@terraform -chdir=infra apply
+
+tf-fmt: ## Format terraform config
+	@terraform -chdir=infra fmt
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*##"; \

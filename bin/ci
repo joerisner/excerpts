@@ -3,4 +3,6 @@
 # Local CI checks.
 # This is executed as a pre-push git hook, but can be ran ad-hoc as well: `bin/ci`.
 
-echo "placeholder"
+uv run ruff check .
+terraform -chdir=infra fmt -check
+terraform -chdir=infra validate
