@@ -37,7 +37,7 @@ directory = "tests/coverage/html"
 [tool.coverage.run]
 branch = true
 data_file = "tests/coverage/.coverage"
-source = ["excerpts/*"]
+include = ["excerpts/*"]
 
 [tool.coverage.xml]
 output = "tests/coverage/coverage.xml"

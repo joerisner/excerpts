@@ -7,11 +7,17 @@ ci: ## Run CI locally
 clean: ## Remove temporary artifacts
 	@bin/clean
 
+coverage: ## View test coverage report in browser
+	@open tests/coverage/html/index.html
+
 setup: ## Install uv, required Python version, and Git pre-push hook to run CI locally
 	@bin/setup
 
 dev: setup ## Run the application in dev mode
 	@uv run fastapi dev --port 3000
+
+test: ## Run test suite
+	@uv run pytest
 
 # Terraform
 tf-plan: ## Run terraform plan

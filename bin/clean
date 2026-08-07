@@ -6,6 +6,9 @@ remove_artifacts() {
   local ARTIFACTS=(
     ./.ruff_cache
     ./terraform.log
+    ./tests/.pytest_cache
+    ./tests/coverage
+    ./tests/test_results
   )
 
   for ARTIFACT in "${ARTIFACTS[@]}"; do

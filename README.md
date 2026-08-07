@@ -5,4 +5,7 @@ Aggregate and revisit selected texts from books, articles, and other mediums. To
 ## Built With
 
 - ⚡️ [FastAPI](https://fastapi.tiangolo.com/) - Backend
+- 🔍 [Pydantic](https://pydantic.dev/docs/) - Data validation
+- 🐘 [PostgreSQL](https://www.postgresql.org/) - Database
 - 🛠️ [Terraform](https://developer.hashicorp.com/terraform) - IaC
+- ✅ [GitHub Actions](https://github.com/features/actions) - CI

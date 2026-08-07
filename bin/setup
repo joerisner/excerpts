@@ -35,7 +35,7 @@ add_pre_push_git_hook() {
 check_for_uv
 check_python_version
 
-if ! [[ $(git config get --local hook.ci.event) ]]; then
+if ! git config get --local hook.ci.event &>/dev/null; then
   add_pre_push_git_hook
   echo "Added pre-push hook to run CI locally"
 fi
