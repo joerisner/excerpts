@@ -1,5 +1,5 @@
 .DEFAULT_GOAL=help
-.PHONY: help clean setup dev ci tf-plan tf-apply tf-fmt
+.PHONY: ci clean coverage db-migrate db-start db-stop dev setup stop test tf-plan tf-apply tf-fmt help
 
 ci: ## Run CI locally
 	@bin/ci
@@ -10,13 +10,26 @@ clean: ## Remove temporary artifacts
 coverage: ## View test coverage report in browser
 	@open tests/coverage/html/index.html
 
-setup: ## Install uv, required Python version, and Git pre-push hook to run CI locally
-	@bin/setup
+db-migrate: ## Run database migrations
+	@uv run alembic upgrade head
 
-dev: setup ## Run the application in dev mode
+db-start: ## Start dev and test database containers
+	@open -a Docker && while (! docker stats --no-stream &> /dev/null ); do sleep 1; done
+	@printf "\033[34;1m== Starting postgres container ==\033[0m\n"
+	@docker compose up -d
+	@echo ""
+	@sleep 1
+
+db-stop: ## Stop running database containers
+	@docker compose down
+
+dev: setup db-start ## Run the application in dev mode
 	@uv run fastapi dev --port 3000
 
-test: ## Run test suite
+setup: ## Setup the local environment for development
+	@bin/setup
+
+test: setup db-start ## Run test suite
 	@uv run pytest
 
 # Terraform

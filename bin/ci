@@ -37,7 +37,7 @@ run_check "ruff-format" "uv run ruff format --check ."
 run_check "tf-format" "terraform -chdir=infra fmt -check"
 run_check "tf-validate" "terraform -chdir=infra validate"
 run_check "typecheck" "uv run ty check ."
-run_check "test" "uv run pytest"
+run_check "test" "make test"
 
 if [[ $FAILURES -gt 0 ]]; then
     # shellcheck disable=SC2059

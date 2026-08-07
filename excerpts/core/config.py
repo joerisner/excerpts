@@ -9,6 +9,8 @@ class Config(BaseSettings):
     API_PREFIX: str = "/api"
     API_OPENAPI_URL: str | None = None
     API_DOCS_URL: str | None = "/api/docs"
+    DATABASE_URL: str
+    ECHO_SQL: bool = False
 
 
-config = Config()
+config = Config()  # pyright: ignore[reportCallIssue] - Values loaded from ENV.
