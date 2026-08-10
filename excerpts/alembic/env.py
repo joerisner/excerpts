@@ -11,7 +11,7 @@ from sqlalchemy import engine_from_config, pool
 # for SQLAlchemy to generate tables.
 import excerpts.models  # noqa: F401
 from excerpts.core.config import config as app_config
-from excerpts.core.db import Base
+from excerpts.models.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
