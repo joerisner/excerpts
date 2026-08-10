@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from excerpts.core.config import config
 
-engine = create_engine(url=str(config.DATABASE_URL), echo=config.ECHO_SQL)
+engine = create_engine(url=config.DATABASE_URL, echo=config.ECHO_SQL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

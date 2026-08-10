@@ -20,7 +20,7 @@ config = context.config
 # NOTE: Configure the `sqlalchemy.url` programmatically here (instead of alembic.ini)
 # so we can leverage our app's config value for DATABASE_URL (from pydantic-settings)
 # rather than hardcoding a URL to the db.
-config.set_main_option("sqlalchemy.url", str(app_config.DATABASE_URL))
+config.set_main_option("sqlalchemy.url", app_config.DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

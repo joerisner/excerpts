@@ -30,8 +30,8 @@ class Config(BaseSettings):
 
     @computed_field
     @property
-    def DATABASE_URL(self) -> PostgresDsn:  # noqa: N802
-        return PostgresDsn.build(
+    def DATABASE_URL(self) -> str:  # noqa: N802
+        dsn = PostgresDsn.build(
             scheme="postgresql+psycopg",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
@@ -39,6 +39,7 @@ class Config(BaseSettings):
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
         )
+        return str(dsn)
 
     @model_validator(mode="after")
     def _enforce_non_default_secrets(self) -> Self:
