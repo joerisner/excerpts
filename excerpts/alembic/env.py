@@ -11,7 +11,7 @@ from sqlalchemy import engine_from_config, pool
 # for SQLAlchemy to generate tables.
 import excerpts.models  # noqa: F401
 from excerpts.core.config import config as app_config
-from excerpts.core.db import Base
+from excerpts.models.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -20,7 +20,7 @@ config = context.config
 # NOTE: Configure the `sqlalchemy.url` programmatically here (instead of alembic.ini)
 # so we can leverage our app's config value for DATABASE_URL (from pydantic-settings)
 # rather than hardcoding a URL to the db.
-config.set_main_option("sqlalchemy.url", app_config.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", str(app_config.DATABASE_URL))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
