@@ -9,6 +9,7 @@ class Config(BaseSettings):
     API_PREFIX: str = "/api"
     API_OPENAPI_URL: str | None = None
     API_DOCS_URL: str | None = "/api/docs"
+    API_STATIC_ASSETS_DIR: str = "/excerpts/assets"
     DATABASE_URL: str
     ECHO_SQL: bool = False
 
