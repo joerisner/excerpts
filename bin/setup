@@ -4,10 +4,15 @@
 
 set -e
 
-check_for_uv() {
-  if ! command -v uv >/dev/null; then
-    printf "\033[0;35mInstalling uv\033[0m\n"
-    brew update && brew install uv
+check_for_homebrew_packages() {
+  if ! command -v brew >/dev/null 2>&1; then
+    printf "\033[0;33mWarn:\033[0m Could not find 'brew' in PATH. Refer to \033[0;31mBrewfile\033[0m for required packages if not using Homebrew.\n"
+    return 0
+  fi
+
+  if ! brew bundle check --file=Brewfile >/dev/null 2>&1; then
+    printf "\033[0;35mMissing required Homebrew packages. Installing now.\033[0m\n"
+    brew bundle --file=Brewfile
   fi
 }
 
@@ -17,9 +22,7 @@ check_python_version() {
   uv python find "${PYTHON_VERSION}" >/dev/null 2>&1 || uv python install --default
 }
 
-# Add a pre-push git hook to the repository's git configuration (./.git/config) for local CI.
-# Requires Git version >2.54.0.
-add_pre_push_git_hook() {
+check_for_git_hooks() {
   # shellcheck disable=SC2155
   local git_version=$(git --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 
@@ -28,16 +31,21 @@ add_pre_push_git_hook() {
     exit 1
   fi
 
-  git config set --local hook.ci.event pre-push
-  git config set --local hook.ci.command ./bin/ci
+  if ! [[ $(git hook list pre-push) == "ci" ]]; then
+    git config set --local hook.ci.event pre-push
+    git config set --local hook.ci.command ./bin/ci
+    echo "Added pre-push hook to run CI locally"
+  fi
+
+  if ! [[ $(git hook list pre-commit) == "gitleaks" ]]; then
+    git config set --local hook.gitleaks.event pre-commit
+    git config set --local hook.gitleaks.command "gitleaks git --staged --no-banner --verbose ."
+    echo "Added pre-commit hook to run gitleaks locally"
+  fi
 }
 
-check_for_uv
+check_for_homebrew_packages
 check_python_version
-
-if ! git config get --local hook.ci.event &>/dev/null; then
-  add_pre_push_git_hook
-  echo "Added pre-push hook to run CI locally"
-fi
+check_for_git_hooks
 
 printf "\033[0;32m  ✔ \033[0mSetup complete\n"
