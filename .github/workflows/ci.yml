@@ -79,6 +79,7 @@ jobs:
 
   snyk:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
       - uses: snyk/actions/setup@master
@@ -87,5 +88,13 @@ jobs:
         run: uv export --format cyclonedx1.5 > sbom.json
       - name: snyk vulnerability scan (SCA)
         run: snyk sbom test --file=sbom.json --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: snyk source code scan (SAST)
+        run: snyk code test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: snyk iac test (SAST)
+        run: snyk iac test ./infra
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
