@@ -39,14 +39,33 @@ resource "github_repository_ruleset" "main" {
       required_approving_review_count = 0
     }
 
-    # TODO: No CI workflow created yet, but will be added later.
-    # required_status_checks {
-    #   strict_required_status_checks_policy =  true
+    required_status_checks {
+      strict_required_status_checks_policy =  true
 
-    #   required_check {
-    #     context = "ci"
-    #   }
-    # }
+      required_check {
+        context = "ruff-lint"
+      }
+
+      required_check {
+        context = "ruff-format"
+      }
+
+      required_check {
+        context = "typecheck"
+      }
+
+      required_check {
+        context = "tf-format"
+      }
+
+      required_check {
+        context = "tf-validate"
+      }
+
+      required_check {
+        context = "pytest"
+      }
+    }
   }
 }
 
