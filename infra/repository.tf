@@ -145,3 +145,9 @@ resource "github_actions_secret" "snyk_token" {
   secret_name = "SNYK_TOKEN"
   value       = var.snyk_token
 }
+
+resource "github_dependabot_secret" "snyk_token" {
+  repository  = github_repository.this.name
+  secret_name = "SNYK_TOKEN"
+  value       = var.snyk_token
+}
