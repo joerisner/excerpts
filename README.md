@@ -12,3 +12,5 @@ Aggregate and revisit selected texts from books, articles, and other mediums. To
 - 🛠️ [Terraform](https://developer.hashicorp.com/terraform) - IaC
 - 🧪 [Pytest](https://docs.pytest.org/en/stable/) - Testing
 - ✅ [GitHub Actions](https://github.com/features/actions) - CI
+- 🕵️‍♂️ [Gitleaks](https://github.com/gitleaks/gitleaks) and [Trufflehog](https://trufflesecurity.com/trufflehog) - Secrets detection
+- 👁️ [Snyk](https://snyk.io/) - SCA and SAST vulnerability scans

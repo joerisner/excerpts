@@ -65,6 +65,14 @@ resource "github_repository_ruleset" "main" {
       required_check {
         context = "pytest"
       }
+
+      required_check {
+        context = "trufflehog"
+      }
+
+      required_check {
+        context = "snyk"
+      }
     }
   }
 }
@@ -77,7 +85,12 @@ resource "github_actions_repository_permissions" "this" {
   allowed_actions_config {
     github_owned_allowed = true # actions/checkout, actions/setup-*, etc.
     verified_allowed     = false
-    patterns_allowed     = ["astral-sh/setup-uv@*", "hashicorp/setup-terraform@*"]
+    patterns_allowed = [
+      "astral-sh/setup-uv@*",
+      "hashicorp/setup-terraform@*",
+      "trufflesecurity/trufflehog@*",
+      "snyk/actions/setup@*"
+    ]
   }
 }
 
@@ -125,4 +138,10 @@ resource "github_issue_labels" "this" {
     description = "Pull requests that update infra code"
     color       = "A97BED"
   }
+}
+
+resource "github_actions_secret" "snyk_token" {
+  repository  = github_repository.this.name
+  secret_name = "SNYK_TOKEN"
+  value       = var.snyk_token
 }
