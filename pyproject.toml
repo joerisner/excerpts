@@ -22,6 +22,7 @@ dev = [
     "dirty-equals>=0.11",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
+    "pytest-env>=1.7.0",
     "ruff>=0.16.1",
     "ty>=0.0.69",
 ]
@@ -30,6 +31,15 @@ dev = [
 #################
 ##### Tools #####
 #################
+
+[tool.alembic]
+# Using mostly default settings. For additional settings, see:
+# https://alembic.sqlalchemy.org/en/latest/tutorial.html#using-pyproject-toml-for-configuration
+script_location = "%(here)s/excerpts/alembic" # path to migration scripts
+prepend_sys_path = ["."] # additional paths to be prepended to sys.path. defaults to the current working directory.
+truncate_slug_length = 40 # max length of characters to apply to the "slug" field
+output_encoding = "utf-8" # the output encoding used when revision files are written from script.py.mako
+file_template = "%%(year)d%%(month).2d%%(day).2d_%%(hour).2d%%(minute).2d_%%(slug)s" # revision file-naming convention
 
 [tool.coverage.html]
 directory = "tests/coverage/html"
@@ -41,6 +51,9 @@ include = ["excerpts/*"]
 
 [tool.coverage.xml]
 output = "tests/coverage/coverage.xml"
+
+[tool.fastapi]
+entrypoint = "excerpts.main:app"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -55,6 +68,10 @@ cache_dir = "tests/.pytest_cache"
 junit_suite_name = "excerpts"
 pythonpath = ["excerpts"]
 testpaths = ["tests"]
+
+[tool.pytest_env]
+ENVIRONMENT = "test"
+POSTGRES_PORT = 5433
 
 [tool.ruff]
 line-length = 120
@@ -85,15 +102,3 @@ ignore = ["ANN401"]  # allow use of `Any` type
     "S101"  # allow `assert` in tests
 ]
 "excerpts/alembic/versions/*.py" = ["UP"]
-
-[tool.fastapi]
-entrypoint = "excerpts.main:app"
-
-[tool.alembic]
-# Using mostly default settings. For additional settings, see:
-# https://alembic.sqlalchemy.org/en/latest/tutorial.html#using-pyproject-toml-for-configuration
-script_location = "%(here)s/excerpts/alembic" # path to migration scripts
-prepend_sys_path = ["."] # additional paths to be prepended to sys.path. defaults to the current working directory.
-truncate_slug_length = 40 # max length of characters to apply to the "slug" field
-output_encoding = "utf-8" # the output encoding used when revision files are written from script.py.mako
-file_template = "%%(year)d%%(month).2d%%(day).2d_%%(hour).2d%%(minute).2d_%%(slug)s" # revision file-naming convention
