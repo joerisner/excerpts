@@ -65,3 +65,14 @@ jobs:
       - run: docker compose up -d db-test
       - name: pytest
         run: uv run pytest
+
+  trufflehog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: trufflehog secret scanning
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --results=verified,unknown
