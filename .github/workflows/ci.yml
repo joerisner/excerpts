@@ -76,3 +76,16 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           extra_args: --results=verified,unknown
+
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: snyk/actions/setup@master
+      - uses: astral-sh/setup-uv@v9.0.0
+      - name: generate SBOM with uv
+        run: uv export --format cyclonedx1.5 > sbom.json
+      - name: snyk vulnerability scan (SCA)
+        run: snyk sbom test --file=sbom.json --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
