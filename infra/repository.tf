@@ -10,7 +10,7 @@ resource "github_repository" "this" {
   allow_update_branch    = false
   delete_branch_on_merge = true
   has_discussions        = false
-  has_issues             = false
+  has_issues             = true
   has_projects           = true
   has_wiki               = false
   is_template            = false
