@@ -39,14 +39,33 @@ resource "github_repository_ruleset" "main" {
       required_approving_review_count = 0
     }
 
-    # TODO: No CI workflow created yet, but will be added later.
-    # required_status_checks {
-    #   strict_required_status_checks_policy =  true
+    required_status_checks {
+      strict_required_status_checks_policy = true
 
-    #   required_check {
-    #     context = "ci"
-    #   }
-    # }
+      required_check {
+        context = "ruff-lint"
+      }
+
+      required_check {
+        context = "ruff-format"
+      }
+
+      required_check {
+        context = "typecheck"
+      }
+
+      required_check {
+        context = "tf-format"
+      }
+
+      required_check {
+        context = "tf-validate"
+      }
+
+      required_check {
+        context = "pytest"
+      }
+    }
   }
 }
 
@@ -66,4 +85,44 @@ resource "github_workflow_repository_permissions" "this" {
   repository                       = github_repository.this.name
   default_workflow_permissions     = "read"
   can_approve_pull_request_reviews = false
+}
+
+resource "github_issue_labels" "this" {
+  repository = github_repository.this.name
+
+  label {
+    name        = "bug-fix"
+    description = "Fixes a bug"
+    color       = "D16069"
+  }
+
+  label {
+    name        = "dependencies"
+    description = "Update project dependencies"
+    color       = "ECDB30"
+  }
+
+  label {
+    name        = "documentation"
+    description = "Improvements or additions to documentation"
+    color       = "BFD4F2"
+  }
+
+  label {
+    name        = "feature"
+    description = "New feature or request"
+    color       = "15D321"
+  }
+
+  label {
+    name        = "python"
+    description = "Pull requests that update Python code"
+    color       = "0DD1FA"
+  }
+
+  label {
+    name        = "infra"
+    description = "Pull requests that update infra code"
+    color       = "A97BED"
+  }
 }

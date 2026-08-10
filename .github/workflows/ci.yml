@@ -62,5 +62,6 @@ jobs:
       - uses: astral-sh/setup-uv@v9.0.0
       - name: install project
         run: uv sync --locked
+      - run: docker compose up -d db-test
       - name: pytest
         run: uv run pytest
