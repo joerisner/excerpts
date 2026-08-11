@@ -1,4 +1,5 @@
 from excerpts.models.author import Author
 from excerpts.models.base import Base
+from excerpts.models.source import Source
 
-__all__ = ["Base", "Author"]
+__all__ = ["Base", "Author", "Source"]
