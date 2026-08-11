@@ -26,6 +26,7 @@ class Source(Base):
     author_id: Mapped[int] = mapped_column(ForeignKey("authors.id"), index=True)
 
     author = relationship("Author", back_populates="sources")
+    excerpts = relationship("Excerpt", back_populates="source", cascade="all, delete-orphan")
 
     @property
     def cover_image_path(self) -> str:
