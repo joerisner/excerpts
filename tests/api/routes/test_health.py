@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 
-def test_healthcheck_success(client: TestClient):
+def test_healthcheck_success(client: TestClient) -> None:
     response = client.get("/api/health")
 
     assert response.status_code == 200
