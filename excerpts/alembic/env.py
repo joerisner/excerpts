@@ -22,6 +22,9 @@ config = context.config
 # rather than hardcoding a URL to the db.
 config.set_main_option("sqlalchemy.url", app_config.DATABASE_URL)
 
+# NOTE: Override default config file path.
+config.config_file_name = "./excerpts/alembic/alembic.ini"
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
