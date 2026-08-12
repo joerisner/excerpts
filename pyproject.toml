@@ -27,6 +27,10 @@ dev = [
     "ty>=0.0.69",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 
 #################
 ##### Tools #####
@@ -70,6 +74,7 @@ pythonpath = ["excerpts"]
 testpaths = ["tests"]
 
 [tool.pytest_env]
+ECHO_SQL = false
 ENVIRONMENT = "test"
 POSTGRES_PORT = 5433
 
