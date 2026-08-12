@@ -13,6 +13,10 @@ coverage: ## View test coverage report in browser
 db-migrate: ## Run database migrations
 	@uv run alembic upgrade head
 
+db-reset: ## Reset the local development database
+	@uv run excerpts/utils/truncate_db.py
+	@uv run excerpts/utils/seed_db.py
+
 db-start: ## Start dev and test database containers
 	@open -a Docker && while (! docker stats --no-stream &> /dev/null ); do sleep 1; done
 	@printf "\033[34;1m== Starting postgres container ==\033[0m\n"

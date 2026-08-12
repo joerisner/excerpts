@@ -38,6 +38,7 @@ tfplan
 tests/test_results/
 tests/coverage/
 tests/.pytest_cache/
+tests/htmlcov/
 
 # Local docs
 docs/

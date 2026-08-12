@@ -9,6 +9,7 @@ remove_artifacts() {
     ./tests/.pytest_cache
     ./tests/coverage
     ./tests/test_results
+    ./tests/htmlcov
   )
 
   for ARTIFACT in "${ARTIFACTS[@]}"; do
