@@ -2,5 +2,8 @@
   "python.defaultInterpreterPath": ".venv/bin/python",
   "python.analysis.typeCheckingMode": "standard",
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestPath": ".venv/bin/pytest"
+  "python.testing.pytestPath": ".venv/bin/pytest",
+  "files.exclude": {
+    "**/__pycache__": true
+  }
 }
