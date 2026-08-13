@@ -103,7 +103,6 @@ ignore = ["ANN401"]  # allow use of `Any` type
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
-    "ANN",  # ignore `annotation` rules for test files
     "S101"  # allow `assert` in tests
 ]
 "excerpts/alembic/versions/*.py" = ["UP"]

@@ -6,6 +6,7 @@ from sqlalchemy import Engine, NullPool, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from excerpts.core.config import config
+from excerpts.core.db import get_db
 from excerpts.main import app
 from excerpts.models.base import Base
 
@@ -26,7 +27,7 @@ def test_engine() -> Generator[Engine]:
 
 
 @pytest.fixture
-def db(test_engine) -> Generator[Session]:
+def db(test_engine: Engine) -> Generator[Session]:
     """
     Provides a session, scoped to a single test.
     Opens a transaction and after the test finishes, rolls it back.
@@ -49,10 +50,20 @@ def db(test_engine) -> Generator[Session]:
             conn.close()
 
 
-@pytest.fixture(scope="module")
-def client() -> Generator[TestClient]:
+@pytest.fixture
+def client(db: Session) -> Generator[TestClient]:
     """
-    Provides a test client for API tests, scoped to the module.
+    Provides a test client for API tests.
+    Overrides the app's db dependency so requests share the test's
+    transactional session.
     """
+
+    def override_get_db() -> Generator[Session]:
+        yield db
+
+    app.dependency_overrides[get_db] = override_get_db
+
     with TestClient(app=app, base_url="http://test") as c:
         yield c
+
+    app.dependency_overrides.clear()
