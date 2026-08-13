@@ -1,17 +1,14 @@
-from datetime import UTC, datetime
-
-from dirty_equals import IsDatetime
 from sqlalchemy.orm import Session
 
 from excerpts.models.author import Author
+from tests.matchers import IsNowUTC
 
 
 def test_create_mononym_author_success(db: Session) -> None:
     author = Author(last_name="Homer")
-
     db.add(author)
     db.commit()
+    data = db.get_one(Author, author.id, populate_existing=False)
 
-    result = db.get_one(Author, author.id, populate_existing=False)
-    assert result.first_name is None
-    assert result.created_at == IsDatetime(approx=datetime.now(UTC), delta=5)
+    assert data.first_name is None
+    assert data.created_at == IsNowUTC
