@@ -45,7 +45,7 @@ class AuthorUpdate(BaseModel):
     @classmethod
     def last_name_not_null(cls, val: str | None) -> str | None:
         if val is None:
-            raise ValueError("last name cannot be null")
+            raise ValueError("last_name cannot be null")
         return val
 
 
