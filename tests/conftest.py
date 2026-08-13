@@ -27,7 +27,7 @@ def test_engine() -> Generator[Engine]:
 
 
 @pytest.fixture
-def db(test_engine) -> Generator[Session]:
+def db(test_engine: Engine) -> Generator[Session]:
     """
     Provides a session, scoped to a single test.
     Opens a transaction and after the test finishes, rolls it back.
@@ -58,7 +58,7 @@ def client(db: Session) -> Generator[TestClient]:
     transactional session.
     """
 
-    def override_get_db():
+    def override_get_db() -> Generator[Session]:
         yield db
 
     app.dependency_overrides[get_db] = override_get_db
