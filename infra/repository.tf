@@ -81,7 +81,6 @@ resource "github_actions_repository_permissions" "this" {
   repository      = github_repository.this.name
   allowed_actions = "selected"
 
-  # TODO: No CI workflow created yet, but will be added later.
   allowed_actions_config {
     github_owned_allowed = true # actions/checkout, actions/setup-*, etc.
     verified_allowed     = false
