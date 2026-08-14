@@ -154,7 +154,7 @@ def test_update_author_cannot_include_null_last_name(client: TestClient, db: Ses
     response = client.patch(f"/api/authors/{author.id}", json={"last_name": None})
 
     assert response.status_code == 422
-    assert "last name cannot be null" in response.text
+    assert "last_name cannot be null" in response.text
 
 
 def test_update_duplicate_author_error(client: TestClient, db: Session) -> None:
