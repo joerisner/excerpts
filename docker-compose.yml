@@ -1,4 +1,25 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        uv run alembic upgrade head
+        uv run excerpts/utils/db_seed.py
+        uv run fastapi dev --port 3000 --host 0.0.0.0
+    ports:
+      - 3000:3000
+    environment:
+      ENVIRONMENT: dev
+      POSTGRES_HOST: host.docker.internal
+    depends_on:
+      db-dev:
+        condition: service_healthy
+
   db-dev:
     image: postgres:18-alpine
     container_name: excerpts-db-dev
@@ -9,6 +30,12 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: dev
     restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   db-test:
     image: postgres:18-alpine
@@ -21,3 +48,9 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: test
     restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL=help
-.PHONY: ci clean coverage db-migrate db-start db-stop dev setup stop test tf-plan tf-apply tf-fmt help
+.PHONY: ci clean coverage db-migrate db-reset db-seed db-start db-stop dev setup test tf-plan tf-apply tf-fmt help
 
 ci: ## Run CI locally
 	@bin/ci
@@ -17,10 +17,13 @@ db-reset: ## Reset the local development database
 	@uv run excerpts/utils/db_truncate.py
 	@uv run excerpts/utils/db_seed.py
 
+db-seed: ## Seed the local development database
+	@uv run excerpts/utils/db_seed.py
+
 db-start: ## Start dev and test database containers
 	@open -a Docker && while (! docker stats --no-stream &> /dev/null ); do sleep 1; done
 	@printf "\033[34;1m== Starting postgres container ==\033[0m\n"
-	@docker compose up -d
+	@docker compose up -d db-dev db-test
 	@echo ""
 	@sleep 1
 
