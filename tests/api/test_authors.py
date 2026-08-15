@@ -34,7 +34,7 @@ def test_create_duplicate_author_error(client: TestClient, db: Session) -> None:
     create_author(db)
     response = client.post("/api/authors", json={"first_name": "Test", "last_name": "AuThOr"})
 
-    assert response.status_code == 400
+    assert response.status_code == 409
     assert response.json() == {"detail": "Author already exists with that name"}
 
 
@@ -162,7 +162,7 @@ def test_update_duplicate_author_error(client: TestClient, db: Session) -> None:
     author_two = create_author(db, first_name="Test", last_name="AuthorTwo")
     response = client.patch(f"/api/authors/{author_two.id}", json={"last_name": "AuThOr"})
 
-    assert response.status_code == 400
+    assert response.status_code == 409
     assert response.json() == {"detail": "Author already exists with that name"}
 
 

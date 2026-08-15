@@ -25,7 +25,7 @@ def create_author(author_in: AuthorCreate, db: DBDep) -> Author:
     existing_author = db.scalars(stmt).first()
 
     if existing_author:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Author already exists with that name")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Author already exists with that name")
 
     author = Author(first_name=author_in.first_name, last_name=author_in.last_name)
     db.add(author)
@@ -91,7 +91,7 @@ def update_author(author_id: int, author_in: AuthorUpdate, db: DBDep) -> Author:
         stmt = stmt.where(Author.first_name.is_(None))
 
     if db.scalars(stmt).first():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Author already exists with that name")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Author already exists with that name")
 
     for field, value in update_data.items():
         setattr(author, field, value)
