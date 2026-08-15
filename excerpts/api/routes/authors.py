@@ -1,11 +1,9 @@
-from typing import Annotated
-
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import func, select
 
 from excerpts.api.schemas import AuthorCreate, AuthorPublic, AuthorsPublic, AuthorUpdate
 from excerpts.models.author import Author
-from excerpts.types import DBDep
+from excerpts.types import DBDep, PaginationLimit, PaginationSkip
 
 router = APIRouter(prefix="/authors", tags=["authors"])
 
@@ -35,9 +33,7 @@ def create_author(author_in: AuthorCreate, db: DBDep) -> Author:
 
 
 @router.get("", response_model=AuthorsPublic)
-def get_authors(
-    db: DBDep, skip: Annotated[int, Query(ge=0)] = 0, limit: Annotated[int, Query(ge=1, le=100)] = 20
-) -> AuthorsPublic:
+def get_authors(db: DBDep, skip: PaginationSkip = 0, limit: PaginationLimit = 20) -> AuthorsPublic:
     """
     Get authors.
     """
