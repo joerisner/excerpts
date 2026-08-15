@@ -1,0 +1,120 @@
+from fastapi import APIRouter, HTTPException, status
+from sqlalchemy import func, select
+from sqlalchemy.orm import selectinload
+
+from excerpts.api.schemas import SourceCreate, SourcePublic, SourcesPublic, SourceUpdate
+from excerpts.models.source import Source
+from excerpts.types import DBDep, PaginationLimit, PaginationSkip
+
+router = APIRouter(prefix="/sources", tags=["sources"])
+
+
+@router.post("", response_model=SourcePublic, status_code=status.HTTP_201_CREATED)
+def create_source(source_in: SourceCreate, db: DBDep) -> Source:
+    """
+    Create new source.
+    """
+    existing_source = db.scalars(
+        select(Source)
+        .where(Source.author_id == source_in.author_id)
+        .where(func.lower(Source.title) == source_in.title.lower())
+    ).first()
+
+    if existing_source:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Source by that title and author already exists"
+        )
+
+    source = Source(
+        title=source_in.title,
+        cover_image_file=source_in.cover_image_file,
+        type=source_in.type,
+        author_id=source_in.author_id,
+    )
+    db.add(source)
+    db.commit()
+    db.refresh(source)
+    return source
+
+
+@router.get("", response_model=SourcesPublic)
+def get_sources(db: DBDep, skip: PaginationSkip = 0, limit: PaginationLimit = 20) -> SourcesPublic:
+    """
+    Get sources.
+    """
+    total = db.scalar(select(func.count()).select_from(Source)) or 0
+    sources = db.scalars(
+        select(Source).options(selectinload(Source.author)).order_by(Source.id).offset(skip).limit(limit)
+    ).all()
+
+    has_more = skip + len(sources) < total
+
+    return SourcesPublic(
+        data=[SourcePublic.model_validate(source) for source in sources],
+        total=total,
+        skip=skip,
+        limit=limit,
+        has_more=has_more,
+    )
+
+
+@router.get("/{source_id}", response_model=SourcePublic)
+def get_source(source_id: int, db: DBDep) -> Source:
+    """
+    Get source by id.
+    """
+    source = db.get(Source, source_id)
+
+    if source:
+        return source
+
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+
+
+@router.patch("/{source_id}", response_model=SourcePublic)
+def update_source(source_id: int, source_in: SourceUpdate, db: DBDep) -> Source:
+    """
+    Update source by id.
+    """
+    source = db.get(Source, source_id)
+
+    if not source:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Source not found")
+
+    update_data = source_in.model_dump(exclude_unset=True)
+
+    # As in create_source, we reject updates that would duplicate an existing source.
+    title = update_data.get("title", source.title)
+    author_id = update_data.get("author_id", source.author_id)
+    existing_source = db.scalars(
+        select(Source)
+        .where(Source.id != source_id)
+        .where(Source.author_id == author_id)
+        .where(func.lower(Source.title) == title.lower())
+    ).first()
+
+    if existing_source:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Source by that title and author already exists"
+        )
+
+    for field, value in update_data.items():
+        setattr(source, field, value)
+
+    db.commit()
+    db.refresh(source)
+    return source
+
+
+@router.delete("/{source_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_source(source_id: int, db: DBDep) -> None:
+    """
+    Delete source by id.
+    """
+    source = db.get(Source, source_id)
+
+    if not source:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+
+    db.delete(source)
+    db.commit()
