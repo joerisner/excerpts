@@ -1,6 +1,6 @@
 # excerpts
 
-Aggregate and revisit selected texts from books, articles, and other mediums. Too often, important excerpts are highlighted and then hidden a book on a bookshelf or bookmarked, only to be forgotten or never read again. Excerpts categorizes and resurfaces those important ideas so they can be revisited frequently.
+Aggregate and revisit meaningful texts from books, articles, and other mediums. Too often, important excerpts are highlighted and then hidden a book on a bookshelf or bookmarked, only to be forgotten or never read again. Excerpts categorizes and resurfaces those important ideas so they can be revisited frequently.
 
 ## Built With
 

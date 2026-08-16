@@ -1,6 +1,6 @@
 resource "github_repository" "this" {
   name               = "excerpts"
-  description        = "Aggregate and revisit selected texts from books, articles, and other mediums."
+  description        = "Aggregate and revisit meaningful texts from books, articles, and other mediums."
   archive_on_destroy = true
 
   allow_auto_merge       = true
