@@ -1,11 +1,9 @@
-from typing import Annotated
-
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import func, select
 
 from excerpts.api.schemas import AuthorCreate, AuthorPublic, AuthorsPublic, AuthorUpdate
 from excerpts.models.author import Author
-from excerpts.types import DBDep
+from excerpts.types import DBDep, PaginationLimit, PaginationSkip
 
 router = APIRouter(prefix="/authors", tags=["authors"])
 
@@ -25,7 +23,7 @@ def create_author(author_in: AuthorCreate, db: DBDep) -> Author:
     existing_author = db.scalars(stmt).first()
 
     if existing_author:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Author already exists with that name")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Author already exists with that name")
 
     author = Author(first_name=author_in.first_name, last_name=author_in.last_name)
     db.add(author)
@@ -35,9 +33,7 @@ def create_author(author_in: AuthorCreate, db: DBDep) -> Author:
 
 
 @router.get("", response_model=AuthorsPublic)
-def get_authors(
-    db: DBDep, skip: Annotated[int, Query(ge=0)] = 0, limit: Annotated[int, Query(ge=1, le=100)] = 20
-) -> AuthorsPublic:
+def get_authors(db: DBDep, skip: PaginationSkip = 0, limit: PaginationLimit = 20) -> AuthorsPublic:
     """
     Get authors.
     """
@@ -91,7 +87,7 @@ def update_author(author_id: int, author_in: AuthorUpdate, db: DBDep) -> Author:
         stmt = stmt.where(Author.first_name.is_(None))
 
     if db.scalars(stmt).first():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Author already exists with that name")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Author already exists with that name")
 
     for field, value in update_data.items():
         setattr(author, field, value)

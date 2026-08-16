@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Enum, ForeignKey, String
+from sqlalchemy import Enum, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from excerpts.core.config import config
@@ -17,6 +17,7 @@ class SourceType(enum.StrEnum):
 
 class Source(Base):
     __tablename__ = "sources"
+    __table_args__ = (UniqueConstraint("title", "author_id", name="uq_sources_title_author_id"),)
 
     title: Mapped[str] = mapped_column(String(160))
     cover_image_file: Mapped[str | None] = mapped_column(String(200))
