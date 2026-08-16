@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from tests.matchers import IsNowUTC, IsPositiveInt
-from tests.utils import create_author
+from tests.utils import create_author, create_source
 
 ##################
 ##### CREATE #####
@@ -47,10 +47,9 @@ def test_get_authors_success(client: TestClient, db: Session) -> None:
     author_one = create_author(db)
     author_two = create_author(session=db, first_name="Nick", last_name="Miller")
     response = client.get("/api/authors")
-    data = response.json()
 
     assert response.status_code == 200
-    assert data == {
+    assert response.json() == {
         "data": [
             {
                 "id": author_one.id,
@@ -74,16 +73,15 @@ def test_get_authors_success(client: TestClient, db: Session) -> None:
 
 def test_get_authors_empty(client: TestClient) -> None:
     response = client.get("/api/authors")
-    data = response.json()
 
     assert response.status_code == 200
-    assert data == {"data": [], "total": 0, "skip": 0, "limit": 20, "has_more": False}
+    assert response.json() == {"data": [], "total": 0, "skip": 0, "limit": 20, "has_more": False}
 
 
 def test_get_authors_pagination_success(client: TestClient, db: Session) -> None:
     create_author(db)
-    create_author(db, first_name="Author", last_name="Two")
-    create_author(db, last_name="Three")
+    create_author(session=db, first_name="Author", last_name="Two")
+    create_author(session=db, last_name="Three")
     response = client.get("/api/authors", params={"limit": 2})
     data = response.json()
 
@@ -106,10 +104,9 @@ def test_get_authors_pagination_invalid_params(client: TestClient) -> None:
 def test_get_author_success(client: TestClient, db: Session) -> None:
     author = create_author(db)
     response = client.get(f"/api/authors/{author.id}")
-    data = response.json()
 
     assert response.status_code == 200
-    assert data == {
+    assert response.json() == {
         "id": author.id,
         "first_name": "Test",
         "last_name": "Author",
@@ -122,6 +119,66 @@ def test_get_author_not_found(client: TestClient) -> None:
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Author not found"}
+
+
+def test_get_author_sources_success(client: TestClient, db: Session) -> None:
+    author_one = create_author(db)
+    author_two = create_author(session=db, last_name="AuthorTwo")
+    source_one = create_source(session=db, author_id=author_one.id)
+    source_two = create_source(session=db, author_id=author_one.id, title="TitleTwo")
+    _source_three = create_source(session=db, author_id=author_two.id)
+    response = client.get(f"/api/authors/{author_one.id}/sources")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "data": [
+            {
+                "title": source_one.title,
+                "cover_image_file": None,
+                "type": "book",
+                "id": source_one.id,
+                "created_at": IsNowUTC,
+                "author": {
+                    "first_name": "Test",
+                    "last_name": "Author",
+                    "id": author_one.id,
+                    "created_at": IsNowUTC,
+                },
+            },
+            {
+                "title": source_two.title,
+                "cover_image_file": None,
+                "type": "book",
+                "id": source_two.id,
+                "created_at": IsNowUTC,
+                "author": {
+                    "first_name": "Test",
+                    "last_name": "Author",
+                    "id": author_one.id,
+                    "created_at": IsNowUTC,
+                },
+            },
+        ],
+        "total": 2,
+        "skip": 0,
+        "limit": 20,
+        "has_more": False,
+    }
+
+
+def test_get_author_sources_author_not_found(client: TestClient) -> None:
+    response = client.get("/api/authors/999/sources")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Author not found"}
+
+
+def test_get_author_sources_no_sources(client: TestClient, db: Session) -> None:
+    author = create_author(db)
+    response = client.get(f"/api/authors/{author.id}/sources")
+
+    assert response.status_code == 200
+    assert response.json() == {"data": [], "total": 0, "skip": 0, "limit": 20, "has_more": False}
 
 
 ##################
@@ -159,7 +216,7 @@ def test_update_author_cannot_include_null_last_name(client: TestClient, db: Ses
 
 def test_update_duplicate_author_error(client: TestClient, db: Session) -> None:
     create_author(db)
-    author_two = create_author(db, first_name="Test", last_name="AuthorTwo")
+    author_two = create_author(session=db, first_name="Test", last_name="AuthorTwo")
     response = client.patch(f"/api/authors/{author_two.id}", json={"last_name": "AuThOr"})
 
     assert response.status_code == 409

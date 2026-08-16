@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import func, select
 
-from excerpts.api.schemas import AuthorCreate, AuthorPublic, AuthorsPublic, AuthorUpdate
+from excerpts.api.schemas import AuthorCreate, AuthorPublic, AuthorsPublic, AuthorUpdate, SourcePublic, SourcesPublic
 from excerpts.models.author import Author
+from excerpts.models.source import Source
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
 
 router = APIRouter(prefix="/authors", tags=["authors"])
@@ -109,3 +110,31 @@ def delete_author(author_id: int, db: DBDep) -> None:
 
     db.delete(author)
     db.commit()
+
+
+@router.get("/{author_id}/sources", response_model=SourcesPublic)
+def get_author_sources(
+    author_id: int, db: DBDep, skip: PaginationSkip = 0, limit: PaginationLimit = 20
+) -> SourcesPublic:
+    """
+    Get sources that belong to an author.
+    """
+    author = db.get(Author, author_id)
+
+    if not author:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
+
+    total = db.scalar(select(func.count()).select_from(Source).where(Source.author_id == author_id)) or 0
+    sources = db.scalars(
+        select(Source).where(Source.author_id == author_id).order_by(Source.id).offset(skip).limit(limit)
+    ).all()
+
+    has_more = skip + len(sources) < total
+
+    return SourcesPublic(
+        data=[SourcePublic.model_validate(source) for source in sources],
+        total=total,
+        skip=skip,
+        limit=limit,
+        has_more=has_more,
+    )
