@@ -1,6 +1,9 @@
+from typing import Any
+
 from sqlalchemy.orm import Session
 
 from excerpts.models.author import Author
+from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
 
 
@@ -36,3 +39,23 @@ def create_source(
     session.commit()
     session.refresh(source)
     return source
+
+
+def create_excerpt(
+    session: Session,
+    source_id: int,
+    content: str | None = "Test Excerpt",
+    locator: str | None = "Page 1",
+    meta: dict[str, Any] | None = None,
+) -> Excerpt:
+    """
+    Create an excerpt using the ORM directly.
+    Returns:
+      - Excerpt
+    """
+    excerpt = Excerpt(source_id=source_id, content=content, locator=locator, meta=meta)
+
+    session.add(excerpt)
+    session.commit()
+    session.refresh(excerpt)
+    return excerpt
