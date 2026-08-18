@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
-from excerpts.api.schemas import SourceCreate, SourcePublic, SourcesPublic, SourceUpdate
+from excerpts.api.schemas import ExcerptPublic, ExcerptsPublic, SourceCreate, SourcePublic, SourcesPublic, SourceUpdate
+from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
 
@@ -118,3 +119,31 @@ def delete_source(source_id: int, db: DBDep) -> None:
 
     db.delete(source)
     db.commit()
+
+
+@router.get("/{source_id}/excerpts", response_model=ExcerptsPublic)
+def get_source_excerpts(
+    source_id: int, db: DBDep, skip: PaginationSkip = 0, limit: PaginationLimit = 50
+) -> ExcerptsPublic:
+    """
+    Get excerpts that belong to a source.
+    """
+    source = db.get(Source, source_id)
+
+    if not source:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+
+    total = db.scalar(select(func.count()).select_from(Excerpt).where(Excerpt.source_id == source_id)) or 0
+    excerpts = db.scalars(
+        select(Excerpt).where(Excerpt.source_id == source_id).order_by(Excerpt.id).offset(skip).limit(limit)
+    ).all()
+
+    has_more = skip + len(excerpts) < total
+
+    return ExcerptsPublic(
+        data=[ExcerptPublic.model_validate(excerpt) for excerpt in excerpts],
+        total=total,
+        skip=skip,
+        limit=limit,
+        has_more=has_more,
+    )

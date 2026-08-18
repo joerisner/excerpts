@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from tests.matchers import IsNowUTC, IsPositiveInt
-from tests.utils import create_author, create_source
+from tests.utils import create_author, create_excerpt, create_source
 
 ##################
 ##### CREATE #####
@@ -167,8 +167,82 @@ def test_get_source_not_found(client: TestClient) -> None:
     assert response.json() == {"detail": "Source not found"}
 
 
+def test_get_source_excerpts_success(client: TestClient, db: Session) -> None:
+    author = create_author(db)
+    source = create_source(session=db, author_id=author.id)
+    excerpt_one = create_excerpt(session=db, source_id=source.id)
+    excerpt_two = create_excerpt(session=db, source_id=source.id, content="Excerpt Two")
+    response = client.get(f"/api/sources/{source.id}/excerpts")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "data": [
+            {
+                "content": "Test Excerpt",
+                "locator": "Page 1",
+                "meta": None,
+                "id": excerpt_one.id,
+                "created_at": IsNowUTC,
+                "source": {
+                    "title": source.title,
+                    "cover_image_file": None,
+                    "type": "book",
+                    "id": source.id,
+                    "created_at": IsNowUTC,
+                    "author": {
+                        "first_name": "Test",
+                        "last_name": "Author",
+                        "id": author.id,
+                        "created_at": IsNowUTC,
+                    },
+                },
+            },
+            {
+                "content": "Excerpt Two",
+                "locator": "Page 1",
+                "meta": None,
+                "id": excerpt_two.id,
+                "created_at": IsNowUTC,
+                "source": {
+                    "title": source.title,
+                    "cover_image_file": None,
+                    "type": "book",
+                    "id": source.id,
+                    "created_at": IsNowUTC,
+                    "author": {
+                        "first_name": "Test",
+                        "last_name": "Author",
+                        "id": author.id,
+                        "created_at": IsNowUTC,
+                    },
+                },
+            },
+        ],
+        "total": 2,
+        "skip": 0,
+        "limit": 50,
+        "has_more": False,
+    }
+
+
+def test_get_source_excerpts_source_not_found(client: TestClient) -> None:
+    response = client.get("/api/sources/999/excerpts")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Source not found"}
+
+
+def test_get_source_excerpts_no_excerpts(client: TestClient, db: Session) -> None:
+    author = create_author(db)
+    source = create_source(session=db, author_id=author.id)
+    response = client.get(f"/api/sources/{source.id}/excerpts")
+
+    assert response.status_code == 200
+    assert response.json() == {"data": [], "total": 0, "skip": 0, "limit": 50, "has_more": False}
+
+
 ##################
-##### CREATE #####
+##### UPDATE #####
 ##################
 
 
