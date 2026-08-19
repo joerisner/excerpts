@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from excerpts.models.author import Author
 from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
+from excerpts.models.tag import Tag
 
 
 def create_author(session: Session, first_name: str | None = "Test", last_name: str = "Author") -> Author:
@@ -59,3 +60,17 @@ def create_excerpt(
     session.commit()
     session.refresh(excerpt)
     return excerpt
+
+
+def create_tag(session: Session, name: str | None = "testing", slug: str | None = "testing") -> Tag:
+    """
+    Create a tag using the ORM directly.
+    Returns:
+      - Tag
+    """
+    tag = Tag(name=name, slug=slug)
+
+    session.add(tag)
+    session.commit()
+    session.refresh(tag)
+    return tag

@@ -10,9 +10,10 @@ from excerpts.core.db import SessionLocal
 from excerpts.models.author import Author
 from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
+from excerpts.models.tag import Tag
 
 # NOTE: Order matters.
-models = [Excerpt, Source, Author]
+models = [Excerpt, Source, Author, Tag]
 
 
 def main() -> None:
@@ -22,11 +23,12 @@ def main() -> None:
             stmt = delete(model)
             session.execute(stmt)
 
-            # Restart PK sequence at 1.
-            tablename = model.__tablename__
-            stmt = text(f"ALTER SEQUENCE {tablename}_id_seq RESTART WITH 1;")
-            session.execute(statement=stmt)
-            session.commit()
+            # Restart PK sequence at 1 for tables that have `id`.
+            if hasattr(model, "id"):
+                tablename = model.__tablename__
+                stmt = text(f"ALTER SEQUENCE {tablename}_id_seq RESTART WITH 1;")
+                session.execute(statement=stmt)
+                session.commit()
 
 
 if __name__ == "__main__":
