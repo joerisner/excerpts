@@ -14,11 +14,11 @@ db-migrate: ## Run database migrations
 	@uv run alembic upgrade head
 
 db-reset: ## Reset the local development database
-	@uv run excerpts/utils/db_truncate.py
-	@uv run excerpts/utils/db_seed.py
+	@uv run excerpts/utils/db/truncate.py
+	@uv run excerpts/utils/db/seed.py
 
 db-seed: ## Seed the local development database
-	@uv run excerpts/utils/db_seed.py
+	@uv run excerpts/utils/db/seed.py
 
 db-start: ## Start dev and test database containers
 	@open -a Docker && while (! docker stats --no-stream &> /dev/null ); do sleep 1; done
