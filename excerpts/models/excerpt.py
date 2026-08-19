@@ -5,10 +5,10 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from excerpts.models.base import Base
+from excerpts.models.base import Base, IdCreatedAtMixin
 
 
-class Excerpt(Base):
+class Excerpt(IdCreatedAtMixin, Base):
     __tablename__ = "excerpts"
 
     content: Mapped[str] = mapped_column(Text)
