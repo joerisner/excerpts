@@ -4,7 +4,7 @@ from sqlalchemy import Enum, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from excerpts.core.config import config
-from excerpts.models.base import Base
+from excerpts.models.base import Base, IdCreatedAtMixin
 
 
 class SourceType(enum.StrEnum):
@@ -15,7 +15,7 @@ class SourceType(enum.StrEnum):
     VIDEO = "video"
 
 
-class Source(Base):
+class Source(IdCreatedAtMixin, Base):
     __tablename__ = "sources"
     __table_args__ = (UniqueConstraint("title", "author_id", name="uq_sources_title_author_id"),)
 
