@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
-from excerpts.api.schemas import HealthCheck
+from excerpts.api.schemas.health import HealthCheck
 
 router = APIRouter(tags=["health"])
 
