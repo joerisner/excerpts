@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
-from excerpts.api.schemas import ExcerptCreate, ExcerptPublic, ExcerptsPublic, ExcerptUpdate
+from excerpts.api.schemas.excerpt import ExcerptCreate, ExcerptPublic, ExcerptsPublic, ExcerptUpdate
 from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
