@@ -6,6 +6,7 @@ from excerpts.models.author import Author
 from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
 from excerpts.models.tag import Tag
+from excerpts.utils.string import slugify
 
 
 def create_author(session: Session, first_name: str | None = "Test", last_name: str = "Author") -> Author:
@@ -62,13 +63,13 @@ def create_excerpt(
     return excerpt
 
 
-def create_tag(session: Session, name: str | None = "testing", slug: str | None = "testing") -> Tag:
+def create_tag(session: Session, name: str = "testing") -> Tag:
     """
     Create a tag using the ORM directly.
     Returns:
       - Tag
     """
-    tag = Tag(name=name, slug=slug)
+    tag = Tag(name=name, slug=slugify(name))
 
     session.add(tag)
     session.commit()
