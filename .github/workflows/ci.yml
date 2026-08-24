@@ -98,3 +98,13 @@ jobs:
         run: snyk iac test ./infra
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  checkov:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: checkov IAC and SCA check
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infra/
+          skip_check: CKV_GIT_1 # Repo is intentionally public, not private.
