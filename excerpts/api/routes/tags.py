@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import func, select
 
 from excerpts.api.schemas.tag import TagCreate, TagPublic, TagsPublic, TagUpdate
+from excerpts.api.utils import get_or_404
 from excerpts.models.tag import Tag
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
 
@@ -49,12 +50,7 @@ def get_tag(tag_id: int, db: DBDep) -> Tag:
     """
     Get tag by id.
     """
-    tag = db.get(Tag, tag_id)
-
-    if tag:
-        return tag
-
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
+    return get_or_404(db=db, model=Tag, id=tag_id)
 
 
 @router.patch("/{tag_id}", response_model=TagPublic)
@@ -62,14 +58,11 @@ def update_tag(tag_id: int, tag_in: TagUpdate, db: DBDep) -> Tag:
     """
     Update tag by id.
     """
-    tag = db.get(Tag, tag_id)
-
-    if not tag:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
-
+    tag = get_or_404(db=db, model=Tag, id=tag_id)
     existing_tag = db.scalars(select(Tag).where(Tag.id != tag_id).where(Tag.slug == tag_in.slug)).first()
+
     if existing_tag:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tag with that name already exists")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tag already exists")
 
     update_data = tag_in.model_dump()
     for field, value in update_data.items():
@@ -85,10 +78,7 @@ def delete_tag(tag_id: int, db: DBDep) -> None:
     """
     Delete tag by id.
     """
-    tag = db.get(Tag, tag_id)
-
-    if not tag:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
+    tag = get_or_404(db=db, model=Tag, id=tag_id)
 
     db.delete(tag)
     db.commit()

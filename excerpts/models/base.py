@@ -19,7 +19,7 @@ class CreatedAtMixin:
     This is used for association tables that do not require an `id` PK.
     """
 
-    # Let the DB be the source of truth when a record was created.
+    # The DB is to be the source of truth when a record was created.
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

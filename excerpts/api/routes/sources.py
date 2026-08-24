@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from excerpts.api.schemas.excerpt import ExcerptPublic, ExcerptsPublic
 from excerpts.api.schemas.source import SourceCreate, SourcePublic, SourcesPublic, SourceUpdate
+from excerpts.api.utils import get_or_404
 from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
@@ -65,12 +66,7 @@ def get_source(source_id: int, db: DBDep) -> Source:
     """
     Get source by id.
     """
-    source = db.get(Source, source_id)
-
-    if source:
-        return source
-
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+    return get_or_404(db=db, model=Source, id=source_id)
 
 
 @router.patch("/{source_id}", response_model=SourcePublic)
@@ -78,11 +74,7 @@ def update_source(source_id: int, source_in: SourceUpdate, db: DBDep) -> Source:
     """
     Update source by id.
     """
-    source = db.get(Source, source_id)
-
-    if not source:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Source not found")
-
+    source = get_or_404(db=db, model=Source, id=source_id)
     update_data = source_in.model_dump(exclude_unset=True)
 
     # As in create_source, we reject updates that would duplicate an existing source.
@@ -113,10 +105,7 @@ def delete_source(source_id: int, db: DBDep) -> None:
     """
     Delete source by id.
     """
-    source = db.get(Source, source_id)
-
-    if not source:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+    source = get_or_404(db=db, model=Source, id=source_id)
 
     db.delete(source)
     db.commit()
@@ -129,10 +118,7 @@ def get_source_excerpts(
     """
     Get excerpts that belong to a source.
     """
-    source = db.get(Source, source_id)
-
-    if not source:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+    get_or_404(db=db, model=Source, id=source_id)
 
     total = db.scalar(select(func.count()).select_from(Excerpt).where(Excerpt.source_id == source_id)) or 0
     excerpts = db.scalars(
