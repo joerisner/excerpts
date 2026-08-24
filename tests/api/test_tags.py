@@ -151,7 +151,7 @@ def test_update_tag_duplicate_tag_error(client: TestClient, db: Session) -> None
     response = client.patch(f"/api/tags/{tag_two.id}", json={"name": "testing"})
 
     assert response.status_code == 409
-    assert response.json() == {"detail": "Tag with that name already exists"}
+    assert response.json() == {"detail": "Tag already exists"}
 
 
 ##################

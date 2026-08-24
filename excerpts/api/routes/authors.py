@@ -3,6 +3,7 @@ from sqlalchemy import func, select
 
 from excerpts.api.schemas.author import AuthorCreate, AuthorPublic, AuthorsPublic, AuthorUpdate
 from excerpts.api.schemas.source import SourcePublic, SourcesPublic
+from excerpts.api.utils import get_or_404
 from excerpts.models.author import Author
 from excerpts.models.source import Source
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
@@ -58,12 +59,7 @@ def get_author(author_id: int, db: DBDep) -> Author:
     """
     Get author by id.
     """
-    author = db.get(Author, author_id)
-
-    if author:
-        return author
-
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
+    return get_or_404(db=db, model=Author, id=author_id)
 
 
 @router.patch("/{author_id}", response_model=AuthorPublic)
@@ -71,11 +67,7 @@ def update_author(author_id: int, author_in: AuthorUpdate, db: DBDep) -> Author:
     """
     Update author by id.
     """
-    author = db.get(Author, author_id)
-
-    if not author:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
-
+    author = get_or_404(db=db, model=Author, id=author_id)
     update_data = author_in.model_dump(exclude_unset=True)  # Do not set default values for fields not explicitly set.
 
     # As in create_author, we reject updates that would duplicate an existing author.
@@ -104,10 +96,7 @@ def delete_author(author_id: int, db: DBDep) -> None:
     """
     Delete author by id.
     """
-    author = db.get(Author, author_id)
-
-    if not author:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
+    author = get_or_404(db=db, model=Author, id=author_id)
 
     db.delete(author)
     db.commit()
@@ -120,10 +109,7 @@ def get_author_sources(
     """
     Get sources that belong to an author.
     """
-    author = db.get(Author, author_id)
-
-    if not author:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
+    get_or_404(db=db, model=Author, id=author_id)
 
     total = db.scalar(select(func.count()).select_from(Source).where(Source.author_id == author_id)) or 0
     sources = db.scalars(

@@ -3,6 +3,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from excerpts.api.schemas.excerpt import ExcerptCreate, ExcerptPublic, ExcerptsPublic, ExcerptUpdate
+from excerpts.api.utils import get_or_404
 from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
@@ -64,12 +65,7 @@ def get_excerpt(excerpt_id: int, db: DBDep) -> Excerpt:
     """
     Get excerpt by id.
     """
-    excerpt = db.get(Excerpt, excerpt_id)
-
-    if excerpt:
-        return excerpt
-
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Excerpt not found")
+    return get_or_404(db=db, model=Excerpt, id=excerpt_id)
 
 
 @router.patch("/{excerpt_id}", response_model=ExcerptPublic)
@@ -77,11 +73,7 @@ def update_excerpt(excerpt_id: int, excerpt_in: ExcerptUpdate, db: DBDep) -> Exc
     """
     Update excerpt by id.
     """
-    excerpt = db.get(Excerpt, excerpt_id)
-
-    if not excerpt:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Excerpt not found")
-
+    excerpt = get_or_404(db=db, model=Excerpt, id=excerpt_id)
     update_data = excerpt_in.model_dump(exclude_unset=True)
 
     if "source_id" in update_data and not db.get(Source, update_data["source_id"]):
@@ -103,10 +95,7 @@ def delete_excerpt(excerpt_id: int, db: DBDep) -> None:
     """
     Delete excerpt by id.
     """
-    excerpt = db.get(Excerpt, excerpt_id)
-
-    if not excerpt:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Excerpt not found")
+    excerpt = get_or_404(db=db, model=Excerpt, id=excerpt_id)
 
     db.delete(excerpt)
     db.commit()
