@@ -73,6 +73,10 @@ resource "github_repository_ruleset" "main" {
       required_check {
         context = "snyk"
       }
+
+      required_check {
+        context = "checkov"
+      }
     }
   }
 }
@@ -88,7 +92,8 @@ resource "github_actions_repository_permissions" "this" {
       "astral-sh/setup-uv@*",
       "hashicorp/setup-terraform@*",
       "trufflesecurity/trufflehog@*",
-      "snyk/actions/setup@*"
+      "snyk/actions/setup@*",
+      "bridgecrewio/checkov-action@*"
     ]
   }
 }
