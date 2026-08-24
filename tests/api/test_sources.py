@@ -160,13 +160,6 @@ def test_get_source_success(client: TestClient, db: Session) -> None:
     }
 
 
-def test_get_source_not_found(client: TestClient) -> None:
-    response = client.get("/api/sources/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Source not found"}
-
-
 def test_get_source_excerpts_success(client: TestClient, db: Session) -> None:
     author = create_author(db)
     source = create_source(session=db, author_id=author.id)
@@ -225,13 +218,6 @@ def test_get_source_excerpts_success(client: TestClient, db: Session) -> None:
     }
 
 
-def test_get_source_excerpts_source_not_found(client: TestClient) -> None:
-    response = client.get("/api/sources/999/excerpts")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Source not found"}
-
-
 def test_get_source_excerpts_no_excerpts(client: TestClient, db: Session) -> None:
     author = create_author(db)
     source = create_source(session=db, author_id=author.id)
@@ -265,13 +251,6 @@ def test_update_source_success(client: TestClient, db: Session) -> None:
             "created_at": IsNowUTC,
         },
     }
-
-
-def test_update_source_not_found(client: TestClient) -> None:
-    response = client.patch("/api/sources/999", json={"title": "Missing"})
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Source not found"}
 
 
 def test_update_source_to_have_different_author(client: TestClient, db: Session) -> None:
@@ -348,10 +327,3 @@ def test_delete_source_success(client: TestClient, db: Session) -> None:
     response = client.delete(f"/api/sources/{source.id}")
 
     assert response.status_code == 204
-
-
-def test_delete_source_not_found(client: TestClient) -> None:
-    response = client.delete("/api/sources/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Source not found"}

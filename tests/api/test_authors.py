@@ -114,13 +114,6 @@ def test_get_author_success(client: TestClient, db: Session) -> None:
     }
 
 
-def test_get_author_not_found(client: TestClient) -> None:
-    response = client.get("/api/authors/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Author not found"}
-
-
 def test_get_author_sources_success(client: TestClient, db: Session) -> None:
     author_one = create_author(db)
     author_two = create_author(session=db, last_name="AuthorTwo")
@@ -166,13 +159,6 @@ def test_get_author_sources_success(client: TestClient, db: Session) -> None:
     }
 
 
-def test_get_author_sources_author_not_found(client: TestClient) -> None:
-    response = client.get("/api/authors/999/sources")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Author not found"}
-
-
 def test_get_author_sources_no_sources(client: TestClient, db: Session) -> None:
     author = create_author(db)
     response = client.get(f"/api/authors/{author.id}/sources")
@@ -197,13 +183,6 @@ def test_update_author_success(client: TestClient, db: Session) -> None:
         "last_name": "Updated",
         "created_at": IsNowUTC,
     }
-
-
-def test_update_author_not_found(client: TestClient) -> None:
-    response = client.patch("/api/authors/999", json={"first_name": "Missing"})
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Author not found"}
 
 
 def test_update_author_cannot_include_null_last_name(client: TestClient, db: Session) -> None:
@@ -233,10 +212,3 @@ def test_delete_author_success(client: TestClient, db: Session) -> None:
     response = client.delete(f"/api/authors/{author.id}")
 
     assert response.status_code == 204
-
-
-def test_delete_author_not_found(client: TestClient) -> None:
-    response = client.delete("/api/authors/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Author not found"}

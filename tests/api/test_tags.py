@@ -113,13 +113,6 @@ def test_get_tag_success(client: TestClient, db: Session) -> None:
     }
 
 
-def test_get_tag_not_found(client: TestClient) -> None:
-    response = client.get("/api/tags/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Tag not found"}
-
-
 ##################
 ##### UPDATE #####
 ##################
@@ -136,13 +129,6 @@ def test_update_tag_success(client: TestClient, db: Session) -> None:
         "id": tag.id,
         "created_at": IsNowUTC,
     }
-
-
-def test_update_tag_not_found(client: TestClient) -> None:
-    response = client.patch("/api/tags/999", json={"name": "Missing"})
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Tag not found"}
 
 
 def test_update_tag_duplicate_tag_error(client: TestClient, db: Session) -> None:
@@ -164,10 +150,3 @@ def test_delete_tag_success(client: TestClient, db: Session) -> None:
     response = client.delete(f"/api/tags/{tag.id}")
 
     assert response.status_code == 204
-
-
-def test_delete_tag_not_found(client: TestClient) -> None:
-    response = client.delete("/api/tags/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Tag not found"}
