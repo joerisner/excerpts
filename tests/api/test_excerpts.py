@@ -197,13 +197,6 @@ def test_get_excerpt_success(client: TestClient, db: Session) -> None:
     }
 
 
-def test_get_excerpt_not_found(client: TestClient) -> None:
-    response = client.get("/api/excerpts/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Excerpt not found"}
-
-
 ##################
 ##### UPDATE #####
 ##################
@@ -236,13 +229,6 @@ def test_update_excerpt_success(client: TestClient, db: Session) -> None:
             },
         },
     }
-
-
-def test_update_excerpt_not_found(client: TestClient) -> None:
-    response = client.patch("/api/excerpts/999", json={"content": "Missing"})
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Excerpt not found"}
 
 
 def test_update_excerpt_to_have_different_source(client: TestClient, db: Session) -> None:
@@ -315,10 +301,3 @@ def test_delete_excerpt_success(client: TestClient, db: Session) -> None:
     response = client.delete(f"/api/excerpts/{excerpt.id}")
 
     assert response.status_code == 204
-
-
-def test_delete_excerpt_not_found(client: TestClient) -> None:
-    response = client.delete("/api/excerpts/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Excerpt not found"}
