@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "allow": ["Bash(make test)"],
+    "deny": ["Bash(curl:*)", "Read(./.env)", "Read(./.env.*)"]
+  }
+}
