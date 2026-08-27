@@ -1,12 +1,13 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, computed_field
 
+from excerpts.types import TagName
 from excerpts.utils.string import slugify
 
 
 class TagBase(BaseModel):
-    name: str = Field(min_length=1, max_length=80)
+    name: TagName
 
     @computed_field
     @property
