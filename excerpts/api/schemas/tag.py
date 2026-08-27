@@ -9,27 +9,31 @@ from excerpts.utils.string import slugify
 class TagBase(BaseModel):
     name: TagName
 
+
+class TagWrite(TagBase):
+    # Disallow setting computed field `slug` manually.
+    model_config = ConfigDict(extra="forbid")
+
     @computed_field
     @property
     def slug(self) -> str:
         return slugify(self.name)
 
 
-class TagCreate(TagBase):
-    # Disallow setting computed field `slug` manually.
-    model_config = ConfigDict(extra="forbid")
+class TagCreate(TagWrite):
+    pass
+
+
+class TagUpdate(TagWrite):
+    pass
 
 
 class TagPublic(TagBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    slug: str
     created_at: datetime
-
-
-class TagUpdate(TagBase):
-    # Disallow setting computed field `slug` manually.
-    model_config = ConfigDict(extra="forbid")
 
 
 class TagsPublic(BaseModel):

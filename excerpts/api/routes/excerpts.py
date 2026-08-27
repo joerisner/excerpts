@@ -3,7 +3,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from excerpts.api.schemas.excerpt import ExcerptCreate, ExcerptPublic, ExcerptsPublic, ExcerptUpdate
-from excerpts.api.utils import get_or_404
+from excerpts.api.utils import get_or_404, resolve_tags
 from excerpts.models.excerpt import Excerpt
 from excerpts.models.source import Source
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
@@ -23,11 +23,14 @@ def create_excerpt(excerpt_in: ExcerptCreate, db: DBDep) -> Excerpt:
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=f"Could not find source with id {source_id}"
         )
 
+    tags = resolve_tags(db, excerpt_in.tags or [])
+
     excerpt = Excerpt(
         content=excerpt_in.content,
         locator=excerpt_in.locator,
         meta=excerpt_in.meta,
         source_id=source_id,
+        tags=tags,
     )
     db.add(excerpt)
     db.commit()
@@ -44,6 +47,7 @@ def get_excerpts(db: DBDep, skip: PaginationSkip = 0, limit: PaginationLimit = 5
     excerpts = db.scalars(
         select(Excerpt)
         .options(selectinload(Excerpt.source).selectinload(Source.author))
+        .options(selectinload(Excerpt.tags))
         .order_by(Excerpt.id)
         .offset(skip)
         .limit(limit)
@@ -81,6 +85,10 @@ def update_excerpt(excerpt_id: int, excerpt_in: ExcerptUpdate, db: DBDep) -> Exc
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Could not find source with id {update_data['source_id']}",
         )
+
+    if "tags" in update_data:
+        # Allow for clearing all tags by passing `tags: null` in the request.
+        update_data["tags"] = resolve_tags(db, update_data["tags"]) if update_data["tags"] else []
 
     for field, value in update_data.items():
         setattr(excerpt, field, value)
