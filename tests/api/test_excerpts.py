@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from tests.matchers import IsNowUTC, IsPositiveInt
-from tests.utils import create_author, create_excerpt, create_source
+from tests.utils import create_author, create_excerpt, create_source, create_tag
 
 ##################
 ##### CREATE #####
@@ -44,6 +44,7 @@ def test_create_excerpt_success(client: TestClient, db: Session) -> None:
                 "created_at": IsNowUTC,
             },
         },
+        "tags": [],
     }
 
 
@@ -69,6 +70,73 @@ def test_create_excerpt_source_not_found_error(client: TestClient) -> None:
 
     assert response.status_code == 422
     assert response.json() == {"detail": "Could not find source with id 999"}
+
+
+def test_create_excerpt_with_existing_tag_success(client: TestClient, db: Session) -> None:
+    author = create_author(db)
+    source = create_source(session=db, author_id=author.id)
+    tag = create_tag(db, name="existing tag")
+    response = client.post(
+        "/api/excerpts", json={"content": "Test content.", "source_id": source.id, "tags": ["existing tag"]}
+    )
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["tags"] == [
+        {
+            "name": "existing tag",
+            "id": tag.id,
+            "created_at": IsNowUTC,
+            "slug": "existing-tag",
+        }
+    ]
+
+
+def test_create_excerpt_with_new_tag_success(client: TestClient, db: Session) -> None:
+    author = create_author(db)
+    source = create_source(session=db, author_id=author.id)
+    existing_tag = create_tag(db)
+    response = client.post(
+        "/api/excerpts",
+        json={
+            "content": "Test content.",
+            "source_id": source.id,
+            "tags": [existing_tag.name, "My First New Tag!", "another-tag"],
+        },
+    )
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["tags"] == [
+        {
+            "name": "another-tag",
+            "id": IsPositiveInt,
+            "created_at": IsNowUTC,
+            "slug": "another-tag",
+        },
+        {
+            "name": "My First New Tag!",
+            "id": IsPositiveInt,
+            "created_at": IsNowUTC,
+            "slug": "my-first-new-tag",
+        },
+        {
+            "name": "testing",
+            "id": existing_tag.id,
+            "created_at": IsNowUTC,
+            "slug": "testing",
+        },
+    ]
+
+
+def test_create_excerpt_tags_with_empty_list(client: TestClient, db: Session) -> None:
+    author = create_author(db)
+    source = create_source(session=db, author_id=author.id)
+    response = client.post("/api/excerpts", json={"content": "Test content.", "source_id": source.id, "tags": []})
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["tags"] == []
 
 
 ##################
@@ -107,6 +175,7 @@ def test_get_excerpts_success(client: TestClient, db: Session) -> None:
                         "created_at": IsNowUTC,
                     },
                 },
+                "tags": [],
             },
             {
                 "content": "Second excerpt.",
@@ -127,6 +196,7 @@ def test_get_excerpts_success(client: TestClient, db: Session) -> None:
                         "created_at": IsNowUTC,
                     },
                 },
+                "tags": [],
             },
         ],
         "total": 2,
@@ -194,6 +264,7 @@ def test_get_excerpt_success(client: TestClient, db: Session) -> None:
                 "created_at": IsNowUTC,
             },
         },
+        "tags": [],
     }
 
 
@@ -228,6 +299,7 @@ def test_update_excerpt_success(client: TestClient, db: Session) -> None:
                 "created_at": IsNowUTC,
             },
         },
+        "tags": [],
     }
 
 
@@ -287,6 +359,49 @@ def test_update_excerpt_source_not_found_error(client: TestClient, db: Session) 
 
     assert response.status_code == 422
     assert response.json() == {"detail": "Could not find source with id 999"}
+
+
+def test_update_excerpt_with_existing_tag_success(client: TestClient, db: Session) -> None:
+    author = create_author(db)
+    source = create_source(session=db, author_id=author.id)
+    tag = create_tag(db, name="existing tag")
+    excerpt = create_excerpt(session=db, source_id=source.id)
+    response = client.patch(f"/api/excerpts/{excerpt.id}", json={"tags": [tag.name]})
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["tags"] == [
+        {
+            "name": "existing tag",
+            "id": tag.id,
+            "created_at": IsNowUTC,
+            "slug": "existing-tag",
+        }
+    ]
+
+
+def test_update_excerpt_with_new_tag_success(client: TestClient, db: Session) -> None:
+    author = create_author(db)
+    source = create_source(session=db, author_id=author.id)
+    excerpt = create_excerpt(session=db, source_id=source.id)
+    response = client.patch(f"/api/excerpts/{excerpt.id}", json={"tags": ["alpha", "bravo"]})
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["tags"] == [
+        {
+            "name": "alpha",
+            "id": IsPositiveInt,
+            "created_at": IsNowUTC,
+            "slug": "alpha",
+        },
+        {
+            "name": "bravo",
+            "id": IsPositiveInt,
+            "created_at": IsNowUTC,
+            "slug": "bravo",
+        },
+    ]
 
 
 ##################

@@ -189,6 +189,7 @@ def test_get_source_excerpts_success(client: TestClient, db: Session) -> None:
                         "created_at": IsNowUTC,
                     },
                 },
+                "tags": [],
             },
             {
                 "content": "Excerpt Two",
@@ -209,6 +210,7 @@ def test_get_source_excerpts_success(client: TestClient, db: Session) -> None:
                         "created_at": IsNowUTC,
                     },
                 },
+                "tags": [],
             },
         ],
         "total": 2,
