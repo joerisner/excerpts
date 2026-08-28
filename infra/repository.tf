@@ -127,7 +127,7 @@ resource "github_issue_labels" "this" {
 
   label {
     name        = "feature"
-    description = "New feature or request"
+    description = "App feature or request"
     color       = "15D321"
   }
 
@@ -139,8 +139,14 @@ resource "github_issue_labels" "this" {
 
   label {
     name        = "infra"
-    description = "Pull requests that update infra code"
+    description = "Infra-related changes"
     color       = "A97BED"
+  }
+
+  label {
+    name        = "tooling"
+    description = "Tooling-related changes"
+    color       = "A53707"
   }
 }
 
