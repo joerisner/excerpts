@@ -1,0 +1,14 @@
+# Config file used by the labeler workflow to apply labels automatically.
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: ['uv.lock', 'Brewfile']
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.md'
+infra:
+  - changed-files:
+      - any-glob-to-any-file: 'infra/**'
+python:
+  - changed-files:
+      - any-glob-to-any-file: 'excerpts/**'
