@@ -1,8 +1,12 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import func, select
+from sqlalchemy.orm import selectinload
 
+from excerpts.api.schemas.excerpt import ExcerptPublic, ExcerptsPublic
 from excerpts.api.schemas.tag import TagCreate, TagPublic, TagsPublic, TagUpdate
 from excerpts.api.utils import get_or_404
+from excerpts.models.excerpt import Excerpt
+from excerpts.models.source import Source
 from excerpts.models.tag import Tag
 from excerpts.types import DBDep, PaginationLimit, PaginationSkip
 
@@ -82,3 +86,32 @@ def delete_tag(tag_id: int, db: DBDep) -> None:
 
     db.delete(tag)
     db.commit()
+
+
+@router.get("/{tag_id}/excerpts", response_model=ExcerptsPublic)
+def get_tag_excerpts(tag_id: int, db: DBDep, skip: PaginationSkip = 0, limit: PaginationLimit = 50) -> ExcerptsPublic:
+    """
+    Get excerpts associated with a tag.
+    """
+    tag = get_or_404(db=db, model=Tag, id=tag_id)
+
+    total = db.scalar(select(func.count()).select_from(Excerpt).where(Excerpt.tags.contains(tag))) or 0
+    excerpts = db.scalars(
+        select(Excerpt)
+        .options(selectinload(Excerpt.source).selectinload(Source.author))
+        .options(selectinload(Excerpt.tags))
+        .where(Excerpt.tags.contains(tag))
+        .order_by(Excerpt.id)
+        .offset(skip)
+        .limit(limit)
+    ).all()
+
+    has_more = skip + len(excerpts) < total
+
+    return ExcerptsPublic(
+        data=[ExcerptPublic.model_validate(excerpt) for excerpt in excerpts],
+        total=total,
+        skip=skip,
+        limit=limit,
+        has_more=has_more,
+    )
