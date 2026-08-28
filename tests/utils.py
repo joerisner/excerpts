@@ -49,6 +49,7 @@ def create_excerpt(
     content: str | None = "Test Excerpt",
     locator: str | None = "Page 1",
     meta: dict[str, Any] | None = None,
+    tags: list[Tag] | None = None,
 ) -> Excerpt:
     """
     Create an excerpt using the ORM directly.
@@ -56,6 +57,9 @@ def create_excerpt(
       - Excerpt
     """
     excerpt = Excerpt(source_id=source_id, content=content, locator=locator, meta=meta)
+
+    if tags:
+        excerpt.tags = tags
 
     session.add(excerpt)
     session.commit()
