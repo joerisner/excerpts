@@ -23,7 +23,7 @@ AUTHORS = [
 SOURCES = [
     {"title": "Dinosaurs and Other Things I Was Right About", "type": "book", "author_id": 1},
     {"title": "From Waitress to Runway", "type": "book", "author_id": 2},
-    {"title": "A Place for Everything: The Geller Method", "type": "book", "author_id": 3},
+    {"title": "A Place for Everything: The Geller Method", "type": "study", "author_id": 3},
     {"title": "Could I BE Any More Sarcastic?", "type": "book", "author_id": 4},
     {"title": "Joey Doesn't Share Food", "type": "book", "author_id": 5},
     {"title": "We Were on a Break", "type": "essay", "author_id": 1},
@@ -31,7 +31,7 @@ SOURCES = [
     {"title": "Seven Steps to a Spotless Apartment", "type": "video", "author_id": 3},
     {"title": "The Transponster", "type": "podcast", "author_id": 4},
     {"title": "Dr. Drake Ramoray: Best of Days of Our Lives", "type": "video", "author_id": 5},
-    {"title": "The Man Behind the Counter", "type": "book", "author_id": 6},
+    {"title": "The Man Behind the Counter", "type": "study", "author_id": 6},
 ]
 
 EXCERPTS = [
