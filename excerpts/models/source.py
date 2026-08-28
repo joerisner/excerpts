@@ -13,6 +13,7 @@ class SourceType(enum.StrEnum):
     ESSAY = "essay"
     PODCAST = "podcast"
     VIDEO = "video"
+    STUDY = "study"
 
 
 class Source(IdCreatedAtMixin, Base):
