@@ -17,4 +17,4 @@ class Excerpt(IdCreatedAtMixin, Base):
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"), index=True)
 
     source = relationship("Source", back_populates="excerpts")
-    tags = relationship("Tag", secondary="excerpt_tags", back_populates="excerpts")
+    tags = relationship("Tag", secondary="excerpt_tags", back_populates="excerpts", order_by="Tag.slug")

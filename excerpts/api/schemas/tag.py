@@ -1,12 +1,18 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, computed_field
 
+from excerpts.types import TagName
 from excerpts.utils.string import slugify
 
 
 class TagBase(BaseModel):
-    name: str = Field(min_length=1, max_length=80)
+    name: TagName
+
+
+class TagWrite(TagBase):
+    # Disallow setting computed field `slug` manually.
+    model_config = ConfigDict(extra="forbid")
 
     @computed_field
     @property
@@ -14,21 +20,20 @@ class TagBase(BaseModel):
         return slugify(self.name)
 
 
-class TagCreate(TagBase):
-    # Disallow setting computed field `slug` manually.
-    model_config = ConfigDict(extra="forbid")
+class TagCreate(TagWrite):
+    pass
+
+
+class TagUpdate(TagWrite):
+    pass
 
 
 class TagPublic(TagBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    slug: str
     created_at: datetime
-
-
-class TagUpdate(TagBase):
-    # Disallow setting computed field `slug` manually.
-    model_config = ConfigDict(extra="forbid")
 
 
 class TagsPublic(BaseModel):

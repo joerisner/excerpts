@@ -12,4 +12,4 @@ class Tag(IdCreatedAtMixin, Base):
     name: Mapped[str] = mapped_column(String(80))
     slug: Mapped[str] = mapped_column(String(80), unique=True, index=True)
 
-    excerpts = relationship("Excerpt", secondary="excerpt_tags", back_populates="tags")
+    excerpts = relationship("Excerpt", secondary="excerpt_tags", back_populates="tags", order_by="Excerpt.id")

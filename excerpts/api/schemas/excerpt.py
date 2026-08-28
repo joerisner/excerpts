@@ -4,6 +4,8 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from excerpts.api.schemas.source import SourcePublic
+from excerpts.api.schemas.tag import TagPublic
+from excerpts.types import TagName
 
 
 class ExcerptBase(BaseModel):
@@ -14,6 +16,7 @@ class ExcerptBase(BaseModel):
 
 class ExcerptCreate(ExcerptBase):
     source_id: int
+    tags: list[TagName] | None = None
 
 
 class ExcerptPublic(ExcerptBase):
@@ -22,6 +25,7 @@ class ExcerptPublic(ExcerptBase):
     id: int
     created_at: datetime
     source: SourcePublic
+    tags: list[TagPublic]
 
 
 class ExcerptUpdate(BaseModel):
@@ -29,6 +33,7 @@ class ExcerptUpdate(BaseModel):
     locator: str | None = Field(min_length=1, max_length=120, default=None)
     meta: dict[str, Any] | None = None
     source_id: int | None = None
+    tags: list[TagName] | None = None  # `tags: []` or `tags: null` clears tags associated with an excerpt.
 
     @field_validator("content")
     @classmethod

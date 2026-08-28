@@ -122,7 +122,12 @@ def get_source_excerpts(
 
     total = db.scalar(select(func.count()).select_from(Excerpt).where(Excerpt.source_id == source_id)) or 0
     excerpts = db.scalars(
-        select(Excerpt).where(Excerpt.source_id == source_id).order_by(Excerpt.id).offset(skip).limit(limit)
+        select(Excerpt)
+        .options(selectinload(Excerpt.tags))
+        .where(Excerpt.source_id == source_id)
+        .order_by(Excerpt.id)
+        .offset(skip)
+        .limit(limit)
     ).all()
 
     has_more = skip + len(excerpts) < total
