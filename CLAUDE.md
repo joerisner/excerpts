@@ -61,3 +61,4 @@ uv run pytest tests/api/test_excerpts.py    # Run a single test
 ## Code Review Rules
 
 - Report findings with a confidence level and cite the exact `file:line` you verified against. If you cannot verify, say so instead of asserting.
+- Flag newly-added files that aren't source or intentional config — scratch output, logs, session artifacts, stray dumps, etc.
