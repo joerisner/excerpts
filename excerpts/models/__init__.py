@@ -4,6 +4,7 @@ from excerpts.models.excerpt import Excerpt
 from excerpts.models.excerpt_tag import ExcerptTag
 from excerpts.models.source import Source
 from excerpts.models.tag import Tag
+from excerpts.models.user import User
 
 __all__ = [
     "Base",
@@ -12,4 +13,5 @@ __all__ = [
     "Excerpt",
     "Tag",
     "ExcerptTag",
+    "User",
 ]
