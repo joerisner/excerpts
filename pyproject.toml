@@ -8,13 +8,13 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
-    "alembic>=1.19.0",
+    "alembic>=1.19.1",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.141.1",
-    "httpx2>=2.9.1",
+    "httpx2>=2.12.0",
     "psycopg[binary]>=3.3.4",
-    "pwdlib[argon2]>=0.3.0",
+    "pwdlib[argon2]>=0.3.1",
     "pyjwt>=2.13.0",
-    "sqlalchemy>=2.0.51",
+    "sqlalchemy>=2.0.52",
 ]
 
 [dependency-groups]
@@ -23,8 +23,8 @@ dev = [
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "pytest-env>=1.7.0",
-    "ruff>=0.16.1",
-    "ty>=0.0.69",
+    "ruff>=0.16.4",
+    "ty>=0.0.74",
 ]
 
 [build-system]
