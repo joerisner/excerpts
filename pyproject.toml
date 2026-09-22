@@ -97,7 +97,9 @@ select = [
     "UP",    # pyupgrade
     "I",     # isort
     "FAST",  # fastapi
-    "N"      # pep8-naming
+    "N",     # pep8-naming
+    "C901",  # mccabe complexity
+    "PLR09"  # pylint-refactor-too-many
 ]
 ignore = ["ANN401"]  # allow use of `Any` type
 
