@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: hashicorp/setup-terraform@v4
       - name: initialize terraform
-        run: terraform -chdir=infra init
+        run: terraform -chdir=infra init -backend=false
       - name: validate terraform configuration
         run: terraform -chdir=infra validate
 
