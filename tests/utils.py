@@ -43,7 +43,7 @@ def create_source(
     return source
 
 
-def create_excerpt(
+def create_excerpt(  # noqa: PLR0913 PLR0917
     session: Session,
     source_id: int,
     content: str | None = "Test Excerpt",
