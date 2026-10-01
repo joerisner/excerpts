@@ -30,6 +30,7 @@ wheels/
 *.tfvars.json
 *.tfplan
 tfplan
+backend.hcl
 
 # Logs
 *.log

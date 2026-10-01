@@ -41,7 +41,7 @@ test: setup db-start ## Run test suite
 
 # Terraform
 tf-plan: ## Run terraform plan
-	@terraform -chdir=infra init
+	@terraform -chdir=infra init -backend-config="./backend.hcl"
 	@terraform -chdir=infra plan
 
 tf-apply: ## Run terraform apply
