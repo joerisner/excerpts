@@ -1,11 +1,11 @@
-# GitHub
 variable "excerpts_token" {
-  type      = string
-  sensitive = true
+  description = "GitHub PAT authorized to make repo changes."
+  type        = string
+  sensitive   = true
 }
 
-# Snyk
 variable "snyk_token" {
-  type      = string
-  sensitive = true
+  description = "Snyk token to authenticate with Snyk project."
+  type        = string
+  sensitive   = true
 }
