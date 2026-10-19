@@ -14,6 +14,7 @@ dependencies = [
     "pwdlib[argon2]>=0.3.1",
     "pyjwt>=2.15.0",
     "sqlalchemy>=2.1.1",
+    "mako>=1.4.3" # Temporary to fix vuln in 1.4.1. Remove after alembic bumps mako.
 ]
 
 [dependency-groups]
