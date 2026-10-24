@@ -33,8 +33,7 @@ uv run pytest tests/api/test_excerpts.py    # Run a single test
 
 ### Config is the source of truth for the database
 
-- `excerpts/core/config.py` defines a single `config` singleton. Two computed fields matter:
-  - `POSTGRES_DB` simply returns `ENVIRONMENT`, so each environment targets a same-named database (`dev`, `test`, `prod`).
+- `excerpts/core/config.py` defines a single `config` singleton. A single computed field:
   - `DATABASE_URL` is built from the individual `POSTGRES_*` settings.
 - `excerpts/alembic/env.py` intentionally sets `sqlalchemy.url` **programmatically** from `config.DATABASE_URL` rather than hardcoding it in `alembic.ini`.
 - When changing DB connection logic, change it in `config.py` — everything else derives from there. A `model_validator` refuses the default `POSTGRES_PASSWORD` in non-dev/test environments.

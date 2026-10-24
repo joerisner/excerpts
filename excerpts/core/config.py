@@ -22,11 +22,7 @@ class Config(BaseSettings):
     POSTGRES_PASSWORD: str = "password"  # noqa: S105
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
-
-    @computed_field
-    @property
-    def POSTGRES_DB(self) -> str:  # noqa: N802
-        return self.ENVIRONMENT
+    POSTGRES_DB: str = "dev"
 
     @computed_field
     @property
