@@ -9,12 +9,14 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.20.0",
-    "fastapi[standard-no-fastapi-cloud-cli]>=0.148.0",
+    "fastapi[standard-no-fastapi-cloud-cli]>=0.162.0",
     "psycopg[binary]>=3.3.6",
     "pwdlib[argon2]>=0.3.1",
     "pyjwt>=2.15.0",
     "sqlalchemy>=2.1.1",
-    "mako>=1.4.3" # Temporary to fix vuln in 1.4.1. Remove after alembic bumps mako.
+    "mako>=1.4.3", # Temporary to fix vuln in 1.4.1. Remove after alembic bumps mako.
+    "dnspython>=2.9.0", # Temporary to fix vuln in 2.8.0. Remove after email validator bumps.
+    "certifi>=2026.10.19" # Temporary to fix vuln in 2026.7.22. Remove after httpx bumps.
 ]
 
 [dependency-groups]
@@ -77,6 +79,7 @@ testpaths = ["tests"]
 ECHO_SQL = false
 ENVIRONMENT = "test"
 POSTGRES_PORT = 5433
+POSTGRES_DB = "test"
 
 [tool.ruff]
 line-length = 120
