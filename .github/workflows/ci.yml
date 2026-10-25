@@ -53,9 +53,11 @@ jobs:
       - name: initialize terraform
         run: |
           terraform -chdir=infra/github init -backend=false
+          terraform -chdir=infra/neon init -backend=false
       - name: validate terraform configuration
         run: |
           terraform -chdir=infra/github validate
+          terraform -chdir=infra/neon validate
 
   pytest:
     runs-on: ubuntu-latest

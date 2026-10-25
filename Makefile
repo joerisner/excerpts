@@ -44,6 +44,7 @@ tf-fmt: ## Format terraform config
 
 tf-validate: ## Validate terraform config
 	@terraform -chdir=infra/github validate
+	@terraform -chdir=infra/neon validate
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*##"; \
