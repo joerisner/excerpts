@@ -5,8 +5,6 @@
 remove_artifacts() {
   local ARTIFACTS=(
     ./.ruff_cache
-    ./terraform.log
-    ./infra/terraform.log
     ./tests/.pytest_cache
     ./tests/coverage
     ./tests/test_results
@@ -37,5 +35,19 @@ remove_pycache_dirs() {
   fi
 }
 
+remove_terraform_logs() {
+  local file_count=0
+
+  if [[ -n "$(find . -type f -name terraform.log -print -quit 2>/dev/null)" ]]; then
+    find . -type f -name terraform.log -exec rm -f {} +
+    ((file_count++))
+  fi
+
+  if [[ $file_count -gt 0 ]]; then
+    printf "Removed all \033[35;1mterraform.log\033[0m files\n"
+  fi
+}
+
 remove_artifacts
 remove_pycache_dirs
+remove_terraform_logs

@@ -78,6 +78,9 @@ testpaths = ["tests"]
 [tool.pytest_env]
 ECHO_SQL = false
 ENVIRONMENT = "test"
+POSTGRES_USER = "user"
+POSTGRES_PASSWORD = "password"
+POSTGRES_HOST = "localhost"
 POSTGRES_PORT = 5433
 POSTGRES_DB = "test"
 

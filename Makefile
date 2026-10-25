@@ -1,5 +1,5 @@
 .DEFAULT_GOAL=help
-.PHONY: ci clean coverage db-migrate db-reset db-seed db-start db-stop dev setup test tf-plan tf-apply tf-fmt help
+.PHONY: ci clean coverage db-migrate db-reset db-seed db-start db-stop dev setup test tf-fmt tf-validate help
 
 ci: ## Run CI locally
 	@bin/ci
@@ -39,16 +39,12 @@ setup: ## Setup the local environment for development
 test: setup db-start ## Run test suite
 	@uv run pytest
 
-# Terraform
-tf-plan: ## Run terraform plan
-	@terraform -chdir=infra init -backend-config="./backend.hcl"
-	@terraform -chdir=infra plan
-
-tf-apply: ## Run terraform apply
-	@terraform -chdir=infra apply
-
 tf-fmt: ## Format terraform config
-	@terraform -chdir=infra fmt
+	@terraform -chdir=infra fmt -recursive
+
+tf-validate: ## Validate terraform config
+	@terraform -chdir=infra/github validate
+	@terraform -chdir=infra/neon validate
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*##"; \
