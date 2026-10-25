@@ -34,8 +34,8 @@ printf "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞\n\n"
 
 run_check "ruff-lint" "uv run ruff check ."
 run_check "ruff-format" "uv run ruff format --check ."
-run_check "tf-format" "terraform -chdir=infra fmt -check"
-run_check "tf-validate" "terraform -chdir=infra validate"
+run_check "tf-format" "terraform -chdir=infra fmt -check -recursive"
+run_check "tf-validate" "terraform -chdir=infra/github validate"
 run_check "typecheck" "uv run ty check ."
 run_check "test" "make test"
 
