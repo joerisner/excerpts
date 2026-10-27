@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -230,12 +231,11 @@ def test_get_excerpts_pagination_success(client: TestClient, db: Session) -> Non
     assert data["has_more"] is True
 
 
-def test_get_excerpts_pagination_invalid_params(client: TestClient) -> None:
-    skip_response = client.get("/api/excerpts", params={"skip": -1})
-    limit_response = client.get("/api/excerpts", params={"limit": 101})
+@pytest.mark.parametrize(argnames="params", argvalues=[{"skip": -1}, {"limit": 101}])
+def test_get_excerpts_pagination_invalid_params(client: TestClient, params: dict[str, int]) -> None:
+    response = client.get("/api/excerpts", params=params)
 
-    assert skip_response.status_code == 422
-    assert limit_response.status_code == 422
+    assert response.status_code == 422
 
 
 def test_get_excerpt_success(client: TestClient, db: Session) -> None:
@@ -329,26 +329,16 @@ def test_update_excerpt_can_clear_locator_and_meta(client: TestClient, db: Sessi
     assert data["meta"] is None
 
 
-def test_update_excerpt_content_cannot_be_null(client: TestClient, db: Session) -> None:
-    """When included in the request, the content field cannot be null."""
+@pytest.mark.parametrize(argnames="field", argvalues=["content", "source_id"])
+def test_update_excerpt_field_cannot_be_null(client: TestClient, db: Session, field: str) -> None:
+    """When included in the request, the field cannot be null."""
     author = create_author(db)
     source = create_source(session=db, author_id=author.id)
     excerpt = create_excerpt(session=db, source_id=source.id)
-    response = client.patch(f"/api/excerpts/{excerpt.id}", json={"content": None})
+    response = client.patch(f"/api/excerpts/{excerpt.id}", json={field: None})
 
     assert response.status_code == 422
-    assert "content cannot be null" in response.text
-
-
-def test_update_excerpt_source_id_cannot_be_null(client: TestClient, db: Session) -> None:
-    """When included in the request, the source_id field cannot be null."""
-    author = create_author(db)
-    source = create_source(session=db, author_id=author.id)
-    excerpt = create_excerpt(session=db, source_id=source.id)
-    response = client.patch(f"/api/excerpts/{excerpt.id}", json={"source_id": None})
-
-    assert response.status_code == 422
-    assert "source_id cannot be null" in response.text
+    assert f"{field} cannot be null" in response.text
 
 
 def test_update_excerpt_source_not_found_error(client: TestClient, db: Session) -> None:

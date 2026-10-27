@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -93,12 +94,11 @@ def test_get_authors_pagination_success(client: TestClient, db: Session) -> None
     assert data["has_more"] is True
 
 
-def test_get_authors_pagination_invalid_params(client: TestClient) -> None:
-    skip_response = client.get("/api/authors", params={"skip": -1})
-    limit_response = client.get("/api/authors", params={"limit": 101})
+@pytest.mark.parametrize(argnames="params", argvalues=[{"skip": -1}, {"limit": 101}])
+def test_get_authors_pagination_invalid_params(client: TestClient, params: dict[str, int]) -> None:
+    response = client.get("/api/authors", params=params)
 
-    assert skip_response.status_code == 422
-    assert limit_response.status_code == 422
+    assert response.status_code == 422
 
 
 def test_get_author_success(client: TestClient, db: Session) -> None:

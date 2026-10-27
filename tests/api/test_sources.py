@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -131,12 +132,11 @@ def test_get_sources_pagination_success(client: TestClient, db: Session) -> None
     assert data["has_more"] is True
 
 
-def test_get_sources_pagination_invalid_params(client: TestClient) -> None:
-    skip_response = client.get("/api/sources", params={"skip": -1})
-    limit_response = client.get("/api/sources", params={"limit": 101})
+@pytest.mark.parametrize(argnames="params", argvalues=[{"skip": -1}, {"limit": 101}])
+def test_get_sources_pagination_invalid_params(client: TestClient, params: dict[str, int]) -> None:
+    response = client.get("/api/sources", params=params)
 
-    assert skip_response.status_code == 422
-    assert limit_response.status_code == 422
+    assert response.status_code == 422
 
 
 def test_get_source_success(client: TestClient, db: Session) -> None:
@@ -288,34 +288,15 @@ def test_update_source_duplicate_source_error_different_author(client: TestClien
     assert response.json() == {"detail": "Source by that title and author already exists"}
 
 
-def test_update_source_title_cannot_be_null(client: TestClient, db: Session) -> None:
-    """When included in the request, the title field cannot be null."""
+@pytest.mark.parametrize(argnames="field", argvalues=["title", "type", "author_id"])
+def test_update_source_field_cannot_be_null(client: TestClient, db: Session, field: str) -> None:
+    """When included in the request, the field cannot be null."""
     author = create_author(db)
     source = create_source(session=db, author_id=author.id)
-    response = client.patch(f"/api/sources/{source.id}", json={"title": None})
+    response = client.patch(f"/api/sources/{source.id}", json={field: None})
 
     assert response.status_code == 422
-    assert "title cannot be null" in response.text
-
-
-def test_update_source_type_cannot_be_null(client: TestClient, db: Session) -> None:
-    """When included in the request, the type field cannot be null."""
-    author = create_author(db)
-    source = create_source(session=db, author_id=author.id)
-    response = client.patch(f"/api/sources/{source.id}", json={"type": None})
-
-    assert response.status_code == 422
-    assert "type cannot be null" in response.text
-
-
-def test_update_source_author_id_cannot_be_null(client: TestClient, db: Session) -> None:
-    """When included in the request, the author_id field cannot be null."""
-    author = create_author(db)
-    source = create_source(session=db, author_id=author.id)
-    response = client.patch(f"/api/sources/{source.id}", json={"author_id": None})
-
-    assert response.status_code == 422
-    assert "author_id cannot be null" in response.text
+    assert f"{field} cannot be null" in response.text
 
 
 ##################
