@@ -8,12 +8,12 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
-    "alembic>=1.20.0",
+    "alembic>=1.20.1",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.162.0",
     "psycopg[binary]>=3.3.6",
     "pwdlib[argon2]>=0.3.1",
-    "pyjwt>=2.15.0",
-    "sqlalchemy>=2.1.1",
+    "pyjwt>=2.15.1",
+    "sqlalchemy>=2.1.6",
     "mako>=1.4.3", # Temporary to fix vuln in 1.4.1. Remove after alembic bumps mako.
     "dnspython>=2.9.0", # Temporary to fix vuln in 2.8.0. Remove after email validator bumps.
     "certifi>=2026.10.19" # Temporary to fix vuln in 2026.7.22. Remove after httpx bumps.
@@ -22,11 +22,11 @@ dependencies = [
 [dependency-groups]
 dev = [
     "dirty-equals>=0.11",
-    "pytest>=9.1.1",
+    "pytest>=9.2.0",
     "pytest-cov>=7.1.0",
-    "pytest-env>=1.7.1",
-    "ruff>=0.16.9",
-    "ty>=0.0.84",
+    "pytest-env>=1.8.4",
+    "ruff>=0.17.3",
+    "ty>=0.0.95",
 ]
 
 [build-system]
